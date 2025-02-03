@@ -8,8 +8,6 @@ builder.Services.AddControllersWithViews();
 //    options.ListenAnyIP(16969); // Change port as needed
 //});
 
-
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
