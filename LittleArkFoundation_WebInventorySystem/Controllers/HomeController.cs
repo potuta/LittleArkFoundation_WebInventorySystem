@@ -1,32 +1,38 @@
 using System.Diagnostics;
+using LittleArkFoundation_WebInventorySystem.Data;
 using LittleArkFoundation_WebInventorySystem.Models;
 using Microsoft.AspNetCore.Mvc;
+using LittleArkFoundation_WebInventorySystem.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace LittleArkFoundation_WebInventorySystem.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ConnectionService _connectionService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ConnectionService connectionService)
         {
-            _logger = logger;
+            _connectionService = connectionService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
-        }
+            string connectionString = _connectionService.GetConnectionString("main");
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
+            using (var _dbContext = new ApplicationDbContext(connectionString))
+            {
+                var bloodInventory = await _dbContext.BloodInventory.ToListAsync();
+                var recentRequests = await _dbContext.HospitalRequests.OrderByDescending(r => r.RequestDate).Take(5).ToListAsync();
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+                var viewModel = new HomeViewModel
+                {
+                    BloodInventory = bloodInventory,
+                    RecentRequests = recentRequests
+                };
+
+                return View(viewModel);
+            }
         }
     }
 }

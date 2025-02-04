@@ -1,8 +1,54 @@
-﻿@{
+﻿@model HomeViewModel
+@{
     ViewData["Title"] = "Home Page";
+    Layout = "_Layout";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="~/css/homeStyle.css" />
+</head>
+<body>
+    <section class="main">
+        <h1>❤️ Give the Gift of Life! ❤️</h1>
+        <p>👉 Donate Blood Today!</p>
+        <button onclick="location.href='@Url.Action("Donate", "Donor")'">🔴 Donate Blood</button>
+        <button onclick="location.href='@Url.Action("RequestBlood", "Hospital")'">🏥 Request Blood</button>
+        <button onclick="location.href='@Url.Action("Login", "Account")'">🔑 Login</button>
+    </section>
+
+    <section>
+        <h2>Blood Inventory Status</h2>
+        <table>
+            <tr><th>Blood Type</th><th>Units Available</th></tr>
+            @foreach (var blood in Model.BloodInventory)
+            {
+                <tr>
+                    <td>@blood.BloodType</td>
+                    <td>@blood.BloodQuantity Units</td>
+                </tr>
+            }
+        </table>
+    </section>
+
+    <section>
+        <h2>Recent Hospital Requests</h2>
+        <table>
+            <tr><th>Hospital Name</th><th>Blood Type</th><th>Status</th></tr>
+            @foreach (var request in Model.RecentRequests)
+            {
+                <tr>
+                    <td>@request.HospitalName</td>
+                    <td>@request.BloodType</td>
+                    <td>@request.Status</td>
+                </tr>
+            }
+        </table>
+    </section>
+</body>
+</html>
+

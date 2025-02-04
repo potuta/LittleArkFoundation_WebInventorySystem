@@ -1,7 +1,20 @@
+using LittleArkFoundation_WebInventorySystem.Data;
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Add authentication services
+builder.Services.AddAuthentication("CookieAuth")
+    .AddCookie("CookieAuth", options =>
+    {
+        options.LoginPath = "/Home/Index";  // Redirect to login page
+        options.AccessDeniedPath = "/Home/Index"; // Redirect if unauthorized
+        options.ExpireTimeSpan = TimeSpan.FromDays(7); // Keep user logged in
+    });
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddSingleton<ConnectionService>();
 
 //builder.WebHost.ConfigureKestrel(options =>
 //{
@@ -23,6 +36,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

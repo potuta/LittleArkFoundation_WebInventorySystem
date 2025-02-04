@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - Admin</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/css/adminStyle.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    @* <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" /> *@
+    @* <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" /> *@
+    <script src="~/js/site.js"></script>
+</head>
+<body>
+    <nav class="navbar-top">
+        <div class="left-buttons">
+            <a asp-area="" asp-controller="Account" asp-action="Logout" class="btn"><b>Home</b></a>
+            <a href="javascript:void(0);" class="btn" id="menu" onclick="toggleSidebar()">
+                <i class='bx bx-menu'></i>
+            </a>
+        </div>
+        <div class="right-buttons">
+            <div class="dropdown">
+                <a href="javascript:void(0);" class="btn" onclick="toggleDropdown()">
+                    <img src="~/Resources/profile-icon-design-free-vector.jpg" alt="profile" class="profile-icon"/>
+                </a>
+                <div id="dropdown-profile-menu" class="dropdown-profile-content">
+                    <a href="profile.html">Profile</a>
+                    <a href="settings.html">Settings</a>
+                    <a href="logout.html" id="logout-link">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="navbar-left">
+        <a asp-controller="Users" asp-action="Index" class="btn-left"><b>Users</b></a>
+    </nav>
+
+    <div class="main-content">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,23 @@
+﻿namespace LittleArkFoundation_WebInventorySystem.Data
+{
+    
+    public class ConnectionService
+    {
+        private readonly IConfiguration _configuration;
+
+        public ConnectionService(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
+        public string GetConnectionString(string dbType)
+        {
+            if (dbType == "archive")
+            {
+                // return "Data Source=DESKTOP-MQAI63D\\SQLEXPRESS;Initial Catalog=STU_DB_2023_2024;Integrated Security=True;TrustServerCertificate=True;Column Encryption Setting=Disabled";
+                return _configuration.GetConnectionString("DefaultConnection1");
+            }
+            return _configuration.GetConnectionString("DefaultConnection1");
+        }
+    }
+}
