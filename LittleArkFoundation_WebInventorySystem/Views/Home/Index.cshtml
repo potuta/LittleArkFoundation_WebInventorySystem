@@ -29,7 +29,7 @@
             {
                 <tr>
                     <td>@blood.BloodType</td>
-                    <td>@blood.BloodQuantity Units</td>
+                    <td>@blood.Quantity Units</td>
                 </tr>
             }
         </table>
@@ -42,7 +42,7 @@
             @foreach (var request in Model.RecentRequests)
             {
                 <tr>
-                    <td>@request.HospitalName</td>
+                    <td>@request.HospitalID</td>
                     <td>@request.BloodType</td>
                     <td>@request.Status</td>
                 </tr>

@@ -23,7 +23,7 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
             using (var _dbContext = new ApplicationDbContext(connectionString))
             {
                 var bloodInventory = await _dbContext.BloodInventory.ToListAsync();
-                var recentRequests = await _dbContext.HospitalRequests.OrderByDescending(r => r.RequestDate).Take(5).ToListAsync();
+                var recentRequests = await _dbContext.BloodRequests.OrderByDescending(r => r.RequestDate).Take(5).ToListAsync();
 
                 var viewModel = new HomeViewModel
                 {

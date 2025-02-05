@@ -12,8 +12,8 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
         {
             _connectionService = connectionService;
         }
-        
-        [Authorize]
+
+        [Authorize(Roles = "Admin")]
         public IActionResult SecurePage()
         {
             return View();

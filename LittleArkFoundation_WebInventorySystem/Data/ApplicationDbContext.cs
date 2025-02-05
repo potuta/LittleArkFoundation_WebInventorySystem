@@ -22,7 +22,7 @@ namespace LittleArkFoundation_WebInventorySystem.Data
 
         public DbSet<UsersModel> Users { get; set; } 
         public DbSet<BloodInventoryModel> BloodInventory { get; set; }
-        public DbSet<HospitalRequestsModel> HospitalRequests { get; set; }
+        public DbSet<BloodRequestsModel> BloodRequests { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -33,9 +33,9 @@ namespace LittleArkFoundation_WebInventorySystem.Data
                 .HasKey(u => u.UserID); // Assuming 'Id' is the primary key property
 
             modelBuilder.Entity<BloodInventoryModel>()
-                .HasKey(b => b.BloodID);
+                .HasKey(b => b.InventoryID);
 
-            modelBuilder.Entity<HospitalRequestsModel>()
+            modelBuilder.Entity<BloodRequestsModel>()
                 .HasKey(h => h.RequestID);
         }
     }

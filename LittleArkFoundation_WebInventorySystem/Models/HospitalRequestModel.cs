@@ -1,9 +1,9 @@
 namespace LittleArkFoundation_WebInventorySystem.Models
 {
-    public class HospitalRequestsModel
+    public class BloodRequestsModel
     {
         public int RequestID { get; set; }
-        public string HospitalName { get; set; }
+        public int HospitalID { get; set; }
         public string BloodType { get; set; }
         public int Quantity { get; set; }
         public string Status { get; set; }
