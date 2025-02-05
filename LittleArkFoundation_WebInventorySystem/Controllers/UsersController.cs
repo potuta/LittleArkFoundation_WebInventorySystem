@@ -23,7 +23,7 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
                 var users = await context.Users.ToListAsync();
                 var viewModel = new UsersViewModel
                 {
-                    Users = users,
+                    Users = users ?? new List<UsersModel>(),
                     NewUser = new UsersModel()
                 };
                 return View(viewModel);
@@ -41,10 +41,11 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
 
                 using (var context = new ApplicationDbContext(connectionString))
                 {
+                    viewModel.NewUser.CreatedAt = DateTime.Now;
                     context.Users.Add(viewModel.NewUser);
                     await context.SaveChangesAsync();
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index), new { dbType });
             }
             
             return View("Index", viewModel);

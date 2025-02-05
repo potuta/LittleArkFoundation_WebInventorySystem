@@ -32,6 +32,10 @@ namespace LittleArkFoundation_WebInventorySystem.Data
             modelBuilder.Entity<UsersModel>()
                 .HasKey(u => u.UserID); // Assuming 'Id' is the primary key property
 
+            modelBuilder.Entity<UsersModel>()
+                .Property(u => u.UserID)
+                .ValueGeneratedOnAdd();
+
             modelBuilder.Entity<BloodInventoryModel>()
                 .HasKey(b => b.InventoryID);
 

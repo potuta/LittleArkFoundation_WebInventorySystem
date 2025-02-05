@@ -20,15 +20,18 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var user in Model.Users)
+        @if (Model.Users != null)
         {
-            <tr>
-                <td>@user.UserID</td>
-                <td>@user.Username</td>
-                <a href="@Url.Action("Details", new { id = user.UserID })">Details</a> |
-                <a href="@Url.Action("Edit", new { id = user.UserID})">Edit</a> |
-                <a href="@Url.Action("Delete", new { id = user.UserID })">Delete</a>
-            </tr>
+            @foreach (var user in Model.Users)
+            {
+                <tr>
+                    <td>@user.UserID</td>
+                    <td>@user.Username</td>
+                    <a href="@Url.Action("Details", new { id = user.UserID })">Details</a> |
+                    <a href="@Url.Action("Edit", new { id = user.UserID})">Edit</a> |
+                    <a href="@Url.Action("Delete", new { id = user.UserID })">Delete</a>
+                </tr>
+            }
         }
     </tbody>
 </table>
@@ -44,7 +47,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form asp-action="Create" asp-controller="Users" method="post">
+                <form asp-action="Create" asp-controller="Users" asp-route-dbType="main" method="post">
                     <div class="form-group">
                         <label asp-for="NewUser.Username" class="control-label"></label>
                         <input type="text" asp-for="NewUser.Username" class="form-control" />
@@ -56,9 +59,23 @@
                         <span asp-validation-for="NewUser.Email" class="text-danger"></span>
                     </div>
                     <div class="form-group">
-                        <label asp-for="NewUser.Password" class="control-label"></label>
-                        <input type="password" asp-for="NewUser.Password" class="form-control" type="password" />
-                        <span asp-validation-for="NewUser.Password" class="text-danger"></span>
+                        <label asp-for="NewUser.PhoneNumber" class="control-label"></label>
+                        <input type="text" asp-for="NewUser.PhoneNumber" class="form-control" />
+                        <span asp-validation-for="NewUser.PhoneNumber" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="NewUser.PasswordHash" class="control-label"></label>
+                        <input type="password" asp-for="NewUser.PasswordHash" class="form-control" type="password" />
+                        <span asp-validation-for="NewUser.PasswordHash" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="NewUser.RoleID" class="control-label"></label>
+                        <select asp-for="NewUser.RoleID" class="form-control">
+                            <option value="1">Admin</option>
+                            <option value="2">Donor</option>
+                            <option value="3">Hospital</option>
+                        </select>
+                        <span asp-validation-for="NewUser.RoleID" class="text-danger"></span>
                     </div>
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary">Create</button>

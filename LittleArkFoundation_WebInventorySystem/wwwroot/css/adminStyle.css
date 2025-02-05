@@ -157,6 +157,7 @@ body.sidebar-collapsed .navbar-left {
 .btn:hover {
     background-color: #00ccff;
     color: white;
+    text-decoration: none;
 }
 
 .dropdown {
