@@ -35,30 +35,30 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(string dbType, UsersViewModel viewModel)
         {
-            //if (ModelState.IsValid)
-            //{
+            //Console.WriteLine($"viewModel is null: {viewModel == null}");
 
-            //}
-                string connectionString = _connectionService.GetConnectionString(dbType);
-
-                using (var context = new ApplicationDbContext(connectionString))
+            if (!ModelState.IsValid)
+            {
+                foreach (var modelState in ModelState.Values)
                 {
-                    viewModel.NewUser.CreatedAt = DateTime.Now;
-                    context.Users.Add(viewModel.NewUser);
-                    await context.SaveChangesAsync();
+                    foreach (var error in modelState.Errors)
+                    {
+                        Console.WriteLine("ModelState Error: " + error.ErrorMessage);
+                    }
                 }
-                return RedirectToAction(nameof(Index), new { dbType });
-            
+                return View("Index", viewModel);
+            }
 
-            //foreach (var modelState in ModelState.Values)
-            //{
-            //    foreach (var error in modelState.Errors)
-            //    {
-            //        Console.WriteLine(error.ErrorMessage);
-            //    }
-            //}
+            string connectionString = _connectionService.GetConnectionString(dbType);
 
-            //return View("Index", viewModel);
+            using (var context = new ApplicationDbContext(connectionString))
+            {
+                viewModel.NewUser.CreatedAt = DateTime.Now;
+                context.Users.Add(viewModel.NewUser);
+                await context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index), new { dbType });
         }
 
         // 🟢 READ: Show details
@@ -66,26 +66,24 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
         {
             string connectionString = _connectionService.GetConnectionString(dbType);
 
-            using (var context = new ApplicationDbContext(connectionString))
+            await using (var context = new ApplicationDbContext(connectionString))
             {
-                var users = await context.Users.FindAsync(id);
-                if (users == null) return NotFound();
-                return View(users);
+                var user = await context.Users.FindAsync(id);
+                if (user == null) return NotFound();
+                return View(user);
             }
-            
         }
 
-        // 🟠 UPDATE: Show edit form
+        // EDIT
         public async Task<IActionResult> Edit(string dbType, int id)
         {
             string connectionString = _connectionService.GetConnectionString(dbType);
             using (var context = new ApplicationDbContext(connectionString))
             {
-                var users = await context.Users.FindAsync(id);
-                if (users == null) return NotFound();
-                return View(users);
+                var user = await context.Users.FindAsync(id);
+                if (user == null) return NotFound();
+                return View(user);
             }
-            
         }
 
         // 🔵 UPDATE: Save changes
@@ -93,17 +91,29 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string dbType, UsersModel user)
         {
+            Console.WriteLine($"viewModel is null: {user == null}");
+
+            if (!ModelState.IsValid)
+            {
+                foreach (var modelState in ModelState.Values)
+                {
+                    foreach (var error in modelState.Errors)
+                    {
+                        Console.WriteLine("ModelState Error: " + error.ErrorMessage);
+                    }
+                }
+                return View("Index", user);
+            }
+
             string connectionString = _connectionService.GetConnectionString(dbType);
+
             using (var context = new ApplicationDbContext(connectionString))
             {
-                if (ModelState.IsValid)
-                {
-                    context.Entry(user).State = EntityState.Modified;
-                    await context.SaveChangesAsync();
-                    return RedirectToAction("Index");
-                }
-                return View(user);
+                context.Entry(user).State = EntityState.Modified;
+                await context.SaveChangesAsync();
             }
+
+            return RedirectToAction("Index");
         }
 
         // 🔴 DELETE: Show confirmation page

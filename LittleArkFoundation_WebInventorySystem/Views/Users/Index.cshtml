@@ -1,17 +1,14 @@
 ﻿@model UsersViewModel
 
 @{
-	ViewData["Title"] = "Users";
+    ViewData["Title"] = "Users";
     Layout = "_AdminLayout";
 }
 
 <h2>Users</h2>
 <a href="#" class="btn-content" data-toggle="modal" data-target="#createUserModal">Create New</a>
-@* <a href="@Url.Action("Create", "Users", new { dbType = "main" })">Create New</a> *@
-    @* <a href="@Url.Action("Index", new { dbType = "main" })" class="btn btn-primary">Main Database</a>
-    <a href="@Url.Action("Index", new { dbType = "archive" })" class="btn btn-secondary">Archive Database</a> *@
-	<a asp-action="Index" asp-controller="Users" asp-route-dbType="main" class="btn-content">Main Database</a>
-	<a asp-action="Index" asp-controller="Users" asp-route-dbType="archive" class="btn-content">Archive Database</a>
+<a asp-action="Index" asp-controller="Users" asp-route-dbType="main" class="btn-content">Main Database</a>
+<a asp-action="Index" asp-controller="Users" asp-route-dbType="archive" class="btn-content">Archive Database</a>
 <table class="table">
     <thead>
         <tr>
@@ -39,9 +36,12 @@
                     <td>@user.RoleID</td>
                     <td>@user.CreatedAt</td>
                     <td>
-                        <a href="@Url.Action("Details", new { id = user.UserID })">Details</a> | 
-                        <a href="@Url.Action("Edit", new { id = user.UserID})">Edit</a> |
-                        <a href="@Url.Action("Delete", new { id = user.UserID })">Delete</a> 
+                        @* <a href="#" data-toggle="modal" data-target="#detailsUserModal" data-id="@user.UserID">Details</a> | *@
+                        @* <a href="#" data-toggle="modal" data-target="#editUserModal" data-id="@user.UserID">Edit</a> | *@
+                        @* <a href="#" data-toggle="modal" data-target="#deleteUserModal" data-id="@user.UserID">Delete</a> *@
+                        <a href="@Url.Action("Details", new { id = user.UserID })">Details</a> |
+                        <a href="@Url.Action("Edit", new { id = user.UserID })">Edit</a> |
+                        <a href="@Url.Action("Delete", new { id = user.UserID })">Delete</a>
                     </td>
                 </tr>
             }
@@ -78,7 +78,7 @@
                     </div>
                     <div class="form-group">
                         <label asp-for="NewUser.PasswordHash" class="control-label"></label>
-                        <input type="password" asp-for="NewUser.PasswordHash" class="form-control" type="password" />
+                        <input type="password" asp-for="NewUser.PasswordHash" class="form-control" />
                         <span asp-validation-for="NewUser.PasswordHash" class="text-danger"></span>
                     </div>
                     <div class="form-group">
@@ -98,3 +98,122 @@
         </div>
     </div>
 </div>
+
+<!-- Details User Modal -->
+<div class="modal fade" id="detailsUserModal" tabindex="-1" role="dialog" aria-labelledby="detailsUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailsUserModalLabel">User Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Username</label>
+                    <p id="details-username" class="form-control-static"></p>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <p id="details-email" class="form-control-static"></p>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <p id="details-phoneNumber" class="form-control-static"></p>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <p id="details-passwordHash" class="form-control-static"></p>
+                </div>
+                <div class="form-group">
+                    <label>Role</label>
+                    <p id="details-roleID" class="form-control-static"></p>
+                </div>
+                <div class="form-group">
+                    <label>Created At</label>
+                    <p id="details-createdAt" class="form-control-static"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit User Modal -->
+<div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Edit" asp-controller="Users" asp-route-dbType="main" method="post">
+                    <div class="form-group">
+                        <label asp-for="NewUser.Username" class="control-label"></label>
+                        <input type="text" asp-for="NewUser.Username" class="form-control" id="edit-username" />
+                        <span asp-validation-for="NewUser.Username" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="NewUser.Email" class="control-label"></label>
+                        <input type="email" asp-for="NewUser.Email" class="form-control" id="edit-email" />
+                        <span asp-validation-for="NewUser.Email" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="NewUser.PhoneNumber" class="control-label"></label>
+                        <input type="number" asp-for="NewUser.PhoneNumber" class="form-control" id="edit-phoneNumber" />
+                        <span asp-validation-for="NewUser.PhoneNumber" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="NewUser.PasswordHash" class="control-label"></label>
+                        <input type="password" asp-for="NewUser.PasswordHash" class="form-control" id="edit-passwordHash" />
+                        <span asp-validation-for="NewUser.PasswordHash" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="NewUser.RoleID" class="control-label"></label>
+                        <select asp-for="NewUser.RoleID" class="form-control" id="edit-roleID">
+                            <option value="1">Admin</option>
+                            <option value="2">Donor</option>
+                            <option value="3">Hospital</option>
+                        </select>
+                        <span asp-validation-for="NewUser.RoleID" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete User Modal -->
+<div class="modal fade" id="deleteUserModal" tabindex="-1" role="dialog" aria-labelledby="deleteUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteUserModalLabel">Delete User</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Delete" asp-controller="Users" asp-route-dbType="main" method="post">
+                    <div class="form-group">
+                        <label>Are you sure you want to delete this user?</label>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/modals.js"></script>
+}
