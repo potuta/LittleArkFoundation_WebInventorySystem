@@ -136,10 +136,10 @@ body.sidebar-collapsed .navbar-left {
 }
 
 .btn-content {
-    color: rgb(0, 0, 0);
+    color: white;
     text-decoration: none;
     padding: 10px 20px;
-    /* background-color: #555; */
+    background-color: #555; 
     border-radius: 5px;
     margin: 5px;
     transition-duration: 0.3s;
@@ -188,6 +188,10 @@ body.sidebar-collapsed .navbar-left {
 
 .show {
     display: block;
+}
+
+.td-password {
+    -webkit-text-security: disc; /* Default */
 }
 
 /* Media Queries for Responsive Design */

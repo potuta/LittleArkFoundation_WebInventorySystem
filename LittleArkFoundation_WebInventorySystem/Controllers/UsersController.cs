@@ -30,13 +30,15 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
             }
         }
             
-            // 🔵 CREATE: Add a new product
+        // 🔵 CREATE: Create a new user
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(string dbType, UsersViewModel viewModel)
         {
-            if (ModelState.IsValid)
-            {
+            //if (ModelState.IsValid)
+            //{
+
+            //}
                 string connectionString = _connectionService.GetConnectionString(dbType);
 
                 using (var context = new ApplicationDbContext(connectionString))
@@ -46,12 +48,20 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
                     await context.SaveChangesAsync();
                 }
                 return RedirectToAction(nameof(Index), new { dbType });
-            }
             
-            return View("Index", viewModel);
+
+            //foreach (var modelState in ModelState.Values)
+            //{
+            //    foreach (var error in modelState.Errors)
+            //    {
+            //        Console.WriteLine(error.ErrorMessage);
+            //    }
+            //}
+
+            //return View("Index", viewModel);
         }
 
-        // 🟢 READ: Show details of a product
+        // 🟢 READ: Show details
         public async Task<IActionResult> Details(string dbType, int id)
         {
             string connectionString = _connectionService.GetConnectionString(dbType);

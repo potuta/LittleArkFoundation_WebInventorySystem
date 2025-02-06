@@ -6,7 +6,7 @@
 }
 
 <h2>Users</h2>
-<a href="#" class="btn" data-toggle="modal" data-target="#createUserModal">Create New</a>
+<a href="#" class="btn-content" data-toggle="modal" data-target="#createUserModal">Create New</a>
 @* <a href="@Url.Action("Create", "Users", new { dbType = "main" })">Create New</a> *@
     @* <a href="@Url.Action("Index", new { dbType = "main" })" class="btn btn-primary">Main Database</a>
     <a href="@Url.Action("Index", new { dbType = "archive" })" class="btn btn-secondary">Archive Database</a> *@
@@ -15,8 +15,14 @@
 <table class="table">
     <thead>
         <tr>
-            <th>ID</th>
-            <th>Name</th>
+            <th>UserID</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>PhoneNumber</th>
+            <th>PasswordHash</th>
+            <th>RoleID</th>
+            <th>CreatedAt</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -27,9 +33,16 @@
                 <tr>
                     <td>@user.UserID</td>
                     <td>@user.Username</td>
-                    <a href="@Url.Action("Details", new { id = user.UserID })">Details</a> |
-                    <a href="@Url.Action("Edit", new { id = user.UserID})">Edit</a> |
-                    <a href="@Url.Action("Delete", new { id = user.UserID })">Delete</a>
+                    <td>@user.Email</td>
+                    <td>@user.PhoneNumber</td>
+                    <td class="td-password">@user.PasswordHash</td>
+                    <td>@user.RoleID</td>
+                    <td>@user.CreatedAt</td>
+                    <td>
+                        <a href="@Url.Action("Details", new { id = user.UserID })">Details</a> | 
+                        <a href="@Url.Action("Edit", new { id = user.UserID})">Edit</a> |
+                        <a href="@Url.Action("Delete", new { id = user.UserID })">Delete</a> 
+                    </td>
                 </tr>
             }
         }
@@ -55,12 +68,12 @@
                     </div>
                     <div class="form-group">
                         <label asp-for="NewUser.Email" class="control-label"></label>
-                        <input type="text" asp-for="NewUser.Email" class="form-control" />
+                        <input type="email" asp-for="NewUser.Email" class="form-control" />
                         <span asp-validation-for="NewUser.Email" class="text-danger"></span>
                     </div>
                     <div class="form-group">
                         <label asp-for="NewUser.PhoneNumber" class="control-label"></label>
-                        <input type="text" asp-for="NewUser.PhoneNumber" class="form-control" />
+                        <input type="number" asp-for="NewUser.PhoneNumber" class="form-control" />
                         <span asp-validation-for="NewUser.PhoneNumber" class="text-danger"></span>
                     </div>
                     <div class="form-group">
