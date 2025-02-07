@@ -14,7 +14,7 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
             _connectionService = connectionService;
         }
 
-        public async Task<IActionResult> Index(string dbType)
+        public async Task<IActionResult> Index(string dbType, bool isArchive)
         {
             string connectionString = _connectionService.GetConnectionString(dbType);
 
@@ -26,11 +26,12 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
                     Users = users ?? new List<UsersModel>(),
                     NewUser = new UsersModel()
                 };
+                ViewBag.isArchive = isArchive;
                 return View(viewModel);
             }
         }
-            
-        // 🔵 CREATE: Create a new user
+        
+        // CREATE: Create a new user
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(string dbType, UsersViewModel viewModel)

@@ -12,7 +12,7 @@
 
         public string GetConnectionString(string dbType)
         {
-            if (dbType == "archive")
+            if (dbType == "backup")
             {
                 // return "Data Source=DESKTOP-MQAI63D\\SQLEXPRESS;Initial Catalog=STU_DB_2023_2024;Integrated Security=True;TrustServerCertificate=True;Column Encryption Setting=Disabled";
                 return _configuration.GetConnectionString("DefaultConnection1");

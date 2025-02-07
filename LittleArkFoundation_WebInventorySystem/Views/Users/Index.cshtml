@@ -3,12 +3,14 @@
 @{
     ViewData["Title"] = "Users";
     Layout = "_AdminLayout";
+    string dbType = ViewBag.dbType ?? "main";
+    bool isArchive = ViewBag.isArchive ?? false;
 }
 
 <h2>Users</h2>
 <a href="#" class="btn-content" data-toggle="modal" data-target="#createUserModal">Create New</a>
-<a asp-action="Index" asp-controller="Users" asp-route-dbType="main" class="btn-content">Main Database</a>
-<a asp-action="Index" asp-controller="Users" asp-route-dbType="archive" class="btn-content">Archive Database</a>
+<a asp-action="Index" asp-controller="Users" asp-route-dbType="@dbType" asp-route-isArchive="false" class="btn-content">Main Database</a>
+<a asp-action="Index" asp-controller="Users" asp-route-dbType="@dbType" asp-route-isArchive="true" class="btn-content">Archive Database</a>
 <table class="table">
     <thead>
         <tr>
@@ -36,12 +38,15 @@
                     <td>@user.RoleID</td>
                     <td>@user.CreatedAt</td>
                     <td>
-                        @* <a href="#" data-toggle="modal" data-target="#detailsUserModal" data-id="@user.UserID">Details</a> | *@
-                        @* <a href="#" data-toggle="modal" data-target="#editUserModal" data-id="@user.UserID">Edit</a> | *@
-                        @* <a href="#" data-toggle="modal" data-target="#deleteUserModal" data-id="@user.UserID">Delete</a> *@
-                        <a href="@Url.Action("Details", new { id = user.UserID })">Details</a> |
-                        <a href="@Url.Action("Edit", new { id = user.UserID })">Edit</a> |
-                        <a href="@Url.Action("Delete", new { id = user.UserID })">Delete</a>
+                        @* <a href="#" data-toggle="modal" data-target="#editUserModal" data-id="@user.UserID">Edit</a>  *@
+                        @* <a href="#" data-toggle="modal" data-target="#deleteUserModal" data-id="@user.UserID">Delete</a>  *@
+                        @* <a href="@Url.Action("Details", new { id = user.UserID })">Details</a>   *@
+                        @if (!isArchive)
+                        {
+                            <a href="#" data-toggle="modal" data-target="#detailsUserModal" data-id="@user.UserID">Details</a> 
+                            <a href="@Url.Action("Edit", new { id = user.UserID })">Edit</a> 
+                            <a href="@Url.Action("Delete", new { id = user.UserID })">Delete</a>
+                        }
                     </td>
                 </tr>
             }
@@ -60,7 +65,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form asp-action="Create" asp-controller="Users" asp-route-dbType="main" method="post">
+                <form asp-action="Create" asp-controller="Users" asp-route-dbType="@dbType" method="post">
                     <div class="form-group">
                         <label asp-for="NewUser.Username" class="control-label"></label>
                         <input type="text" asp-for="NewUser.Username" class="form-control" />
@@ -112,27 +117,27 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label>Username</label>
-                    <p id="details-username" class="form-control-static"></p>
+                    <p id="details-username" class="form-control-static">@Model.NewUser.Username</p>
                 </div>
                 <div class="form-group">
                     <label>Email</label>
-                    <p id="details-email" class="form-control-static"></p>
+                    <p id="details-email" class="form-control-static">@Model.NewUser.Email</p>
                 </div>
                 <div class="form-group">
                     <label>Phone Number</label>
-                    <p id="details-phoneNumber" class="form-control-static"></p>
+                    <p id="details-phoneNumber" class="form-control-static">@Model.NewUser.PhoneNumber</p>
                 </div>
                 <div class="form-group">
                     <label>Password</label>
-                    <p id="details-passwordHash" class="form-control-static"></p>
+                    <p id="details-passwordHash" class="form-control-static">@Model.NewUser.PasswordHash</p>
                 </div>
                 <div class="form-group">
                     <label>Role</label>
-                    <p id="details-roleID" class="form-control-static"></p>
+                    <p id="details-roleID" class="form-control-static">@Model.NewUser.RoleID</p>
                 </div>
                 <div class="form-group">
                     <label>Created At</label>
-                    <p id="details-createdAt" class="form-control-static"></p>
+                    <p id="details-createdAt" class="form-control-static">@Model.NewUser.CreatedAt</p>
                 </div>
             </div>
         </div>

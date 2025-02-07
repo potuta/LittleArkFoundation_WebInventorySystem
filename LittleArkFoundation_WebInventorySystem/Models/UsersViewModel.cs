@@ -4,7 +4,6 @@ namespace LittleArkFoundation_WebInventorySystem.Models
 {
     public class UsersViewModel
     {
-
         public IEnumerable<UsersModel>? Users { get; set; }
 
         //[BindRequired]
