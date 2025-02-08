@@ -63,7 +63,7 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
                 await context.SaveChangesAsync();
             }
 
-            return RedirectToAction(nameof(Index), new { dbType });
+            return RedirectToAction("Index");
         }
 
         // 🟢 READ: Show details
