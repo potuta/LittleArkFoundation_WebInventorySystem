@@ -21,6 +21,7 @@ namespace LittleArkFoundation_WebInventorySystem.Data
         }
 
         public DbSet<UsersModel> Users { get; set; } 
+        public DbSet<RolesModel> Roles { get; set; }
         public DbSet<BloodInventoryModel> BloodInventory { get; set; }
         public DbSet<BloodRequestsModel> BloodRequests { get; set; }
 
@@ -35,6 +36,9 @@ namespace LittleArkFoundation_WebInventorySystem.Data
             modelBuilder.Entity<UsersModel>()
                 .Property(u => u.UserID)
                 .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<RolesModel>()
+                .HasKey(r => r.RoleID);
 
             modelBuilder.Entity<BloodInventoryModel>()
                 .HasKey(b => b.InventoryID);

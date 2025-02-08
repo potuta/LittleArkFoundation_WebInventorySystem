@@ -38,12 +38,12 @@
                     <td>@user.RoleID</td>
                     <td>@user.CreatedAt</td>
                     <td>
+                        @* <a href="#" data-toggle="modal" data-target="#detailsUserModal" data-id="@user.UserID" asp-action="Details" asp-controller="Users" asp-route-id="@user.UserID">Details</a>  *@
                         @* <a href="#" data-toggle="modal" data-target="#editUserModal" data-id="@user.UserID">Edit</a>  *@
                         @* <a href="#" data-toggle="modal" data-target="#deleteUserModal" data-id="@user.UserID">Delete</a>  *@
-                        @* <a href="@Url.Action("Details", new { id = user.UserID })">Details</a>   *@
                         @if (!isArchive)
                         {
-                            <a href="#" data-toggle="modal" data-target="#detailsUserModal" data-id="@user.UserID">Details</a> 
+                            <a href="@Url.Action("Details", new { id = user.UserID })">Details</a>  
                             <a href="@Url.Action("Edit", new { id = user.UserID })">Edit</a> 
                             <a href="@Url.Action("Delete", new { id = user.UserID })">Delete</a>
                         }
@@ -89,9 +89,15 @@
                     <div class="form-group">
                         <label asp-for="NewUser.RoleID" class="control-label"></label>
                         <select asp-for="NewUser.RoleID" class="form-control">
-                            <option value="1">Admin</option>
-                            <option value="2">Donor</option>
-                            <option value="3">Hospital</option>
+                            @* <option value="1">Admin</option> *@
+                            @* <option value="2">Donor</option> *@
+                            @* <option value="3">Doctor</option> *@
+
+                            @foreach (var role in Model.Roles)
+                            {
+                                <option value="@role.RoleID">@role.RoleName</option>
+                            }
+
                         </select>
                         <span asp-validation-for="NewUser.RoleID" class="text-danger"></span>
                     </div>

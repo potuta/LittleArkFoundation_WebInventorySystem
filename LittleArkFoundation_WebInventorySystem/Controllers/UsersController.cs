@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using LittleArkFoundation_WebInventorySystem.Data;
 using LittleArkFoundation_WebInventorySystem.Models;
+using LittleArkFoundation_WebInventorySystem.Data.Repositories;
 
 namespace LittleArkFoundation_WebInventorySystem.Controllers
 {
@@ -21,11 +22,14 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
             await using (var context = new ApplicationDbContext(connectionString))
             {
                 var users = await context.Users.ToListAsync();
+
                 var viewModel = new UsersViewModel
                 {
-                    Users = users ?? new List<UsersModel>(),
-                    NewUser = new UsersModel()
+                    Users = users,
+                    NewUser = new UsersModel(),
+                    Roles = new RolesRepository(_connectionService).GetRoles(dbType)
                 };
+
                 ViewBag.isArchive = isArchive;
                 return View(viewModel);
             }
@@ -73,6 +77,7 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
                 if (user == null) return NotFound();
                 return View(user);
             }
+
         }
 
         // EDIT
@@ -83,14 +88,22 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
             {
                 var user = await context.Users.FindAsync(id);
                 if (user == null) return NotFound();
-                return View(user);
+
+                var viewModel = new UsersViewModel
+                {
+                    Users = new List<UsersModel>(),
+                    NewUser = user,
+                    Roles = new RolesRepository(_connectionService).GetRoles(dbType)
+                };
+
+                return View(viewModel);
             }
         }
 
         // 🔵 UPDATE: Save changes
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string dbType, UsersModel user)
+        public async Task<IActionResult> Edit(string dbType, UsersViewModel user)
         {
             Console.WriteLine($"viewModel is null: {user == null}");
 
@@ -103,6 +116,7 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
                         Console.WriteLine("ModelState Error: " + error.ErrorMessage);
                     }
                 }
+                user.Roles = new RolesRepository(_connectionService).GetRoles(dbType);
                 return View("Index", user);
             }
 
@@ -110,7 +124,8 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
 
             using (var context = new ApplicationDbContext(connectionString))
             {
-                context.Entry(user).State = EntityState.Modified;
+                //context.Entry(user).State = EntityState.Modified;
+                context.Update(user.NewUser);
                 await context.SaveChangesAsync();
             }
 

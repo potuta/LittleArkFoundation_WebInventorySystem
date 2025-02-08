@@ -1,8 +1,9 @@
-﻿@model UsersModel
+﻿@model UsersViewModel
 
 @{
     ViewData["Title"] = "Edit User";
     Layout = "_AdminLayout";
+    string dbType = ViewBag.dbType ?? "main";
 }
 
 <h2>Edit User</h2>
@@ -10,39 +11,46 @@
 <div>
     <h4>UsersModel</h4>
     <hr />
-    <form asp-action="Edit" asp-controller="Users" asp-route-dbType="main" method="post">
+    <form asp-action="Edit" asp-controller="Users" asp-route-dbType="@dbType" method="post">
+        <input type="hidden" asp-for="NewUser.UserID"/>
         <div class="form-group">
-            <label asp-for="Username" class="control-label"></label>
-            <input asp-for="Username" class="form-control" />
-            <span asp-validation-for="Username" class="text-danger"></span>
+            <label asp-for="NewUser.Username" class="control-label"></label>
+            <input asp-for="NewUser.Username" class="form-control" />
+            <span asp-validation-for="NewUser.Username" class="text-danger"></span>
         </div>
         <div class="form-group">
-            <label asp-for="Email" class="control-label"></label>
-            <input asp-for="Email" class="form-control" />
-            <span asp-validation-for="Email" class="text-danger"></span>
+            <label asp-for="NewUser.Email" class="control-label"></label>
+            <input asp-for="NewUser.Email" class="form-control" />
+            <span asp-validation-for="NewUser.Email" class="text-danger"></span>
         </div>
         <div class="form-group">
-            <label asp-for="PhoneNumber" class="control-label"></label>
-            <input asp-for="PhoneNumber" class="form-control" />
-            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            <label asp-for="NewUser.PhoneNumber" class="control-label"></label>
+            <input asp-for="NewUser.PhoneNumber" class="form-control" />
+            <span asp-validation-for="NewUser.PhoneNumber" class="text-danger"></span>
         </div>
         <div class="form-group">
-            <label asp-for="PasswordHash" class="control-label"></label>
-            <input asp-for="PasswordHash" class="form-control" />
-            <span asp-validation-for="PasswordHash" class="text-danger"></span>
+            <label asp-for="NewUser.PasswordHash" class="control-label"></label>
+            <input asp-for="NewUser.PasswordHash" class="form-control" />
+            <span asp-validation-for="NewUser.PasswordHash" class="text-danger"></span>
         </div>
         <div class="form-group">
-            <label asp-for="RoleID" class="control-label"></label>
-            <select asp-for="RoleID" class="form-control">
-                <option value="1">Admin</option>
-                <option value="2">Donor</option>
-                <option value="3">Hospital</option>
+            <label asp-for="NewUser.RoleID" class="control-label"></label>
+            <select asp-for="NewUser.RoleID" class="form-control">
+                @* <option value="1">Admin</option> *@
+                @* <option value="2">Donor</option> *@
+                @* <option value="3">Hospital</option> *@
+
+                @foreach (var role in Model.Roles)
+                {
+                    <option value="@role.RoleID">@role.RoleName</option>
+                }
+
             </select>
-            <span asp-validation-for="RoleID" class="text-danger"></span>
+            <span asp-validation-for="NewUser.RoleID" class="text-danger"></span>
         </div>
         <div class="form-group">
-            <label asp-for="CreatedAt" class="control-label"></label>
-            <input asp-for="CreatedAt" class="form-control" readonly />
+            <label asp-for="NewUser.CreatedAt" class="control-label"></label>
+            <input asp-for="NewUser.CreatedAt" class="form-control" readonly />
         </div>
         <div class="form-group">
             <input type="submit" value="Save" class="btn btn-primary" />
