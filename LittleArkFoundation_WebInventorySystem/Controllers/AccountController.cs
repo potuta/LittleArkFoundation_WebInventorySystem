@@ -3,63 +3,51 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
+using LittleArkFoundation_WebInventorySystem.Data;
+using LittleArkFoundation_WebInventorySystem.Data.Repositories;
 
 namespace LittleArkFoundation_WebInventorySystem.Controllers
 {
     public class AccountController : Controller
     {
+        private readonly ConnectionService _connectionService;
+
+        public AccountController(ConnectionService connectionService)
+        {
+            _connectionService = connectionService;
+        }
+
         [HttpPost]
         public async Task<IActionResult> Index(int userID, string password)
         {
-            if (userID == 10001 && password == "admin")
+            string connectionString = _connectionService.GetConnectionString("main");
+
+            bool result = await new UsersRepository(connectionString).VerifyUserExist(userID, password);
+
+            if (result == false)
             {
-                var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Sid, userID.ToString()),
-                    new Claim(ClaimTypes.Role, "Admin")
-                };
-                
-                var identity = new ClaimsIdentity(claims, "CookieAuth");
-                var principal = new ClaimsPrincipal(identity);
-
-                await HttpContext.SignInAsync("CookieAuth", principal);
-
-                Console.WriteLine($"Admin login successful, {userID}, {password}");
-                return RedirectToAction("SecurePage", "Admin");
+                return RedirectToAction("Index", "Home");
             }
-            else if (userID == 20001 && password == "donor")
+
+            var user = await new UsersRepository(connectionString).GetUserAsync(userID);
+
+            if (user != null)
             {
+                string role = await new RolesRepository(connectionString).GetRoleNameByRoleID(user.RoleID);
+
                 var claims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.Sid, userID.ToString()),
-                    new Claim(ClaimTypes.Role, "Donor")
+                    new Claim(ClaimTypes.Sid, user.UserID.ToString()),
+                    new Claim(ClaimTypes.Role, role)
                 };
 
                 var identity = new ClaimsIdentity(claims, "CookieAuth");
                 var principal = new ClaimsPrincipal(identity);
 
                 await HttpContext.SignInAsync("CookieAuth", principal);
-
-                Console.WriteLine($"Donor login successful, {userID}, {password}");
-                return RedirectToAction("SecurePage", "Donor");
+                return RedirectToAction("SecurePage", role);
             }
-            else if (userID == 30001 && password == "hospital")
-            {
-                var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Sid, userID.ToString()),
-                    new Claim(ClaimTypes.Role, "Hospital")
-                };
 
-                var identity = new ClaimsIdentity(claims, "CookieAuth");
-                var principal = new ClaimsPrincipal(identity);
-
-                await HttpContext.SignInAsync("CookieAuth", principal);
-
-                Console.WriteLine($"Hospital login successful, {userID}, {password}");
-                return RedirectToAction("SecurePage", "Hospital");
-            }
-            
             return RedirectToAction("Index", "Home");
         }
 

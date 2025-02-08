@@ -43,9 +43,9 @@
                         @* <a href="#" data-toggle="modal" data-target="#deleteUserModal" data-id="@user.UserID">Delete</a>  *@
                         @if (!isArchive)
                         {
-                            <a href="@Url.Action("Details", new { id = user.UserID })">Details</a>  
+                            @* <a href="@Url.Action("Details", new { id = user.UserID })">Details</a>   *@
                             <a href="@Url.Action("Edit", new { id = user.UserID })">Edit</a> 
-                            <a href="@Url.Action("Delete", new { id = user.UserID })">Delete</a>
+                            <a href="@Url.Action("Archive", new { id = user.UserID })">Move to Archive</a>
                         }
                     </td>
                 </tr>

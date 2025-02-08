@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using LittleArkFoundation_WebInventorySystem.Data;
 using LittleArkFoundation_WebInventorySystem.Models;
 using LittleArkFoundation_WebInventorySystem.Data.Repositories;
+using Microsoft.AspNetCore.Identity;
 
 namespace LittleArkFoundation_WebInventorySystem.Controllers
 {
@@ -58,7 +59,13 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
 
             using (var context = new ApplicationDbContext(connectionString))
             {
+                byte[] passwordSalt = PasswordService.GenerateSalt();
+                string hashedPassword = PasswordService.HashPassword(viewModel.NewUser.PasswordHash, passwordSalt);
+
+                viewModel.NewUser.PasswordHash = hashedPassword;
+                viewModel.NewUser.PasswordSalt = Convert.ToBase64String(passwordSalt);
                 viewModel.NewUser.CreatedAt = DateTime.Now;
+
                 context.Users.Add(viewModel.NewUser);
                 await context.SaveChangesAsync();
             }
@@ -80,7 +87,8 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
 
         }
 
-        // EDIT
+        //TODO: Implement password hash change
+        // 🟡 EDIT: Show edit page
         public async Task<IActionResult> Edit(string dbType, int id)
         {
             string connectionString = _connectionService.GetConnectionString(dbType);
@@ -125,12 +133,21 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
             using (var context = new ApplicationDbContext(connectionString))
             {
                 //context.Entry(user).State = EntityState.Modified;
-                context.Update(user.NewUser);
+                //context.Update(user.NewUser);
+                context.Users.Update(user.NewUser);
                 await context.SaveChangesAsync();
             }
 
             return RedirectToAction("Index");
         }
+
+        // TODO: Implement Archive
+        // 🟡 ARCHIVE: Archive the user
+        public async Task<IActionResult> Archive(string dbType, int id)
+        {
+            return RedirectToAction("Index");
+        }
+
 
         // 🔴 DELETE: Show confirmation page
         public async Task<IActionResult> Delete(string dbType, int id)
