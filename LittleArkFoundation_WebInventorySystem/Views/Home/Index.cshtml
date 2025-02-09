@@ -17,8 +17,8 @@
         <h1>❤️ Give the Gift of Life! ❤️</h1>
         <p>👉 Donate Blood Today!</p>
         <button onclick="location.href='@Url.Action("Donate", "Donor")'">🔴 Donate Blood</button>
-        <button onclick="location.href='@Url.Action("RequestBlood", "Hospital")'">🏥 Request Blood</button>
-        <button onclick="location.href='@Url.Action("Login", "Account")'">🔑 Login</button>
+        @* <button onclick="location.href='@Url.Action("RequestBlood", "Hospital")'">🏥 Request Blood</button> *@
+        <button data-bs-toggle="modal" data-bs-target="#loginModal">🔑 Login</button>
     </section>
 
     <section>

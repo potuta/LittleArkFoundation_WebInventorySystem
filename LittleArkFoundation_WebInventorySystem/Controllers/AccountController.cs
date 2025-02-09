@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using LittleArkFoundation_WebInventorySystem.Data;
 using LittleArkFoundation_WebInventorySystem.Data.Repositories;
 using Microsoft.Data.SqlClient;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LittleArkFoundation_WebInventorySystem.Controllers
 {
@@ -19,7 +20,8 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Index(int userID, string password)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(int userID, string password)
         {
             string connectionString = _connectionService.GetConnectionString("main");
 
@@ -83,6 +85,26 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
             {
                 LoggingService.LogWarning("User logged out but no UserID claim found.");
             }
+            return RedirectToAction("Index", "Home");
+        }
+
+        // TODO: Implement VerifyCode and ResetPassword
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> VerifyCode()
+        {
+            return RedirectToAction("ResetPassword");
+        }
+
+        public IActionResult ResetPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(string oldPassword, string newPassword)
+        {
             return RedirectToAction("Index", "Home");
         }
     }
