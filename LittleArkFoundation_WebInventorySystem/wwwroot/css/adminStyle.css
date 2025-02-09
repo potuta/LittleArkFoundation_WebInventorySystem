@@ -133,6 +133,7 @@ body.sidebar-collapsed .navbar-left {
     word-wrap: break-word;
     white-space: normal;
     text-align: center;
+    font-weight: bold;
 }
 
 .btn-content {
@@ -155,6 +156,12 @@ body.sidebar-collapsed .navbar-left {
 .btn-main:hover,
 .btn-left:hover,
 .btn:hover {
+    background-color: #00ccff;
+    color: white;
+    text-decoration: none;
+}
+
+.btn-left.active {
     background-color: #00ccff;
     color: white;
     text-decoration: none;
@@ -193,6 +200,10 @@ body.sidebar-collapsed .navbar-left {
 .td-password,
 #td-password {
     -webkit-text-security: disc;  
+}
+
+h2{
+    font-weight: bold;
 }
 
 /* Media Queries for Responsive Design */

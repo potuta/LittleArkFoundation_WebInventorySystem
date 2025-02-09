@@ -32,7 +32,8 @@
     </nav>
 
     <nav class="navbar-left">
-        <a asp-controller="Users" asp-action="Index" class="btn-left"><b>Users</b></a>
+        <a asp-controller="Users" asp-action="Index" class="btn-left @(ViewContext.RouteData.Values["controller"]?.ToString() == "Users" ? "active" : "")">Users</a>
+        <a asp-controller="" asp-action="" class="btn-left @(ViewContext.RouteData.Values["controller"]?.ToString() == "Roles" ? "active" : "")">Roles</a>
     </nav>
 
     <div class="main-content">

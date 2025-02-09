@@ -4,7 +4,7 @@ using LittleArkFoundation_WebInventorySystem.Data;
 using LittleArkFoundation_WebInventorySystem.Models;
 using LittleArkFoundation_WebInventorySystem.Data.Repositories;
 using Microsoft.AspNetCore.Identity;
-
+//TODO: Implement searching
 namespace LittleArkFoundation_WebInventorySystem.Controllers
 {
     public class UsersController : Controller
