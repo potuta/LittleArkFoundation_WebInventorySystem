@@ -190,8 +190,9 @@ body.sidebar-collapsed .navbar-left {
     display: block;
 }
 
-.td-password {
-    -webkit-text-security: disc; /* Default */
+.td-password,
+#td-password {
+    -webkit-text-security: disc;  
 }
 
 /* Media Queries for Responsive Design */

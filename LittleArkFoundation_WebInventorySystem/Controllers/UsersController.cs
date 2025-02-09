@@ -87,7 +87,6 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
 
         }
 
-        //TODO: Implement password hash change
         // 🟡 EDIT: Show edit page
         public async Task<IActionResult> Edit(string dbType, int id)
         {
@@ -108,10 +107,11 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
             }
         }
 
+        //TODO: Implement logging for edit
         // 🔵 UPDATE: Save changes
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string dbType, UsersViewModel user)
+        public async Task<IActionResult> Edit(string dbType, UsersViewModel user, bool isEditPasswordEnabled)
         {
             Console.WriteLine($"viewModel is null: {user == null}");
 
@@ -121,7 +121,7 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
                 {
                     foreach (var error in modelState.Errors)
                     {
-                        Console.WriteLine("ModelState Error: " + error.ErrorMessage);
+                        Console.WriteLine("ModelState Error: " + error.ErrorMessage, error.Exception);
                     }
                 }
                 user.Roles = new RolesRepository(_connectionService).GetRoles(dbType);
@@ -134,6 +134,15 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
             {
                 //context.Entry(user).State = EntityState.Modified;
                 //context.Update(user.NewUser);
+
+                if (isEditPasswordEnabled)
+                {
+                    byte[] passwordSalt = PasswordService.GenerateSalt();
+                    string hashedPassword = PasswordService.HashPassword(user.NewUser.PasswordHash, passwordSalt);
+                    user.NewUser.PasswordHash = hashedPassword;
+                    user.NewUser.PasswordSalt = Convert.ToBase64String(passwordSalt);
+                }
+
                 context.Users.Update(user.NewUser);
                 await context.SaveChangesAsync();
             }
@@ -148,6 +157,12 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
             return RedirectToAction("Index");
         }
 
+        // TODO: Implement Unarchive
+        // 🟡 UNARCHIVE: Unarchive the user
+        public async Task<IActionResult> Unarchive(string dbType, int id)
+        {
+            return RedirectToAction("Index");
+        }
 
         // 🔴 DELETE: Show confirmation page
         public async Task<IActionResult> Delete(string dbType, int id)

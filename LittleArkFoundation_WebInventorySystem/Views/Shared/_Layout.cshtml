@@ -35,6 +35,7 @@
     </div>
 
     <!-- Login Modal -->
+
     <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -55,6 +56,12 @@
                         </li>
                     </ul>
                     <div class="tab-content" id="loginTabContent">
+                        @if (TempData["LoginError"] != null)
+                        {
+                            <div class="alert alert-danger" id="loginErrorMessage">
+                                @TempData["LoginError"]
+                            </div>
+                        }
                         <div class="tab-pane fade show active" id="admin" role="tabpanel" aria-labelledby="admin-tab">
                             <form id="adminLoginForm" asp-area="" asp-controller="Account" asp-action="Index" method="post">
                                 <div class="mb-3">
@@ -103,11 +110,7 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    <script>
-        var isAuthenticated = '@User.Identity.IsAuthenticated'.toLowerCase() === 'true';
-        var userRole = '@User.FindFirst(ClaimTypes.Role)?.Value';
-        localStorage.setItem('userRole', userRole);
-    </script>
+    
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -48,12 +48,15 @@ namespace LittleArkFoundation_WebInventorySystem.Data.Repositories
                 }
             }catch(SqlException ex)
             {
-                Console.WriteLine($"Error: {ex.Message}");
-                return false;
+                throw;
             }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
             return false; // User not found or password mismatch
         }
-
 
         public async Task<UsersModel> GetUserAsync(int id)
         {
