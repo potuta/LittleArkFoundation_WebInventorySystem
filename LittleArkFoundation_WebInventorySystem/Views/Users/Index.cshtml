@@ -70,6 +70,7 @@
             </div>
             <div class="modal-body">
                 <form asp-action="Create" asp-controller="Users" asp-route-dbType="@dbType" method="post">
+                    @Html.AntiForgeryToken()
                     <div class="form-group">
                         <label asp-for="NewUser.Username" class="control-label"></label>
                         <input type="text" asp-for="NewUser.Username" class="form-control" required/>
