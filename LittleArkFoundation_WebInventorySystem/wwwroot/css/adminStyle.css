@@ -206,6 +206,38 @@ h2{
     font-weight: bold;
 }
 
+.search-container {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between elements */
+    flex-wrap: wrap; /* Prevents breaking */
+    width: 40%;
+}
+
+    .search-container form {
+        display: flex;
+        flex-grow: 1;
+        align-items: center;
+    }
+
+#searchString{
+    margin: 10px;
+}
+
+.inputgroup {
+    display: flex;
+    flex-grow: 1;
+    align-items: center;
+}
+
+    .inputgroup .form-control {
+        flex-grow: 1;
+    }
+
+.search-container a {
+    white-space: nowrap; /* Ensures "Back to Full List" stays in one line */
+}
+
 /* Media Queries for Responsive Design */
 @media (max-width: 768px) {
     .navbar-top-main {

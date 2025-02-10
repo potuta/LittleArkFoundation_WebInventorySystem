@@ -4,7 +4,7 @@ using LittleArkFoundation_WebInventorySystem.Data;
 using LittleArkFoundation_WebInventorySystem.Models;
 using LittleArkFoundation_WebInventorySystem.Data.Repositories;
 using Microsoft.AspNetCore.Identity;
-//TODO: Implement searching
+
 namespace LittleArkFoundation_WebInventorySystem.Controllers
 {
     public class UsersController : Controller
@@ -35,7 +35,37 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
                 return View(viewModel);
             }
         }
-        
+
+        //TODO: improve searching
+        public async Task<IActionResult> SearchByName(string searchString, string dbType, bool isArchive)
+        {
+            string connectionString = _connectionService.GetConnectionString(dbType);
+
+            await using (var context = new ApplicationDbContext(connectionString))
+            {
+                if (!string.IsNullOrEmpty(searchString))
+                {
+                    var users = await context.Users
+                                .Where(u => string.IsNullOrEmpty(searchString) ||
+                                u.Username.Contains(searchString)) // 🔍 Apply search filter
+                                .ToListAsync();
+
+                    var viewModel = new UsersViewModel
+                    {
+                        Users = users,
+                        NewUser = new UsersModel(),
+                        Roles = new RolesRepository(_connectionService).GetRoles(dbType)
+                    };
+
+                    ViewBag.isArchive = isArchive;
+                    return View("Index", viewModel);
+                }
+
+                return RedirectToAction("Index", new {dbType, isArchive});
+            }
+
+        }
+
         // CREATE: Create a new user
         [HttpPost]
         [ValidateAntiForgeryToken]
