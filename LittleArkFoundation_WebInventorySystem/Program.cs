@@ -1,17 +1,27 @@
 using LittleArkFoundation_WebInventorySystem.Data;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add authentication services
-builder.Services.AddAuthentication("CookieAuth")
-    .AddCookie("CookieAuth", options =>
+//builder.Services.AddAuthentication("CookieAuth")
+//    .AddCookie("CookieAuth", options =>
+//    {
+//        options.LoginPath = "/Home/Index";  // Redirect to login page
+//        options.AccessDeniedPath = "/Home/Index"; // Redirect if unauthorized
+//        options.ExpireTimeSpan = TimeSpan.FromDays(7); // Keep user logged in
+//    });
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
     {
-        options.LoginPath = "/Home/Index";  // Redirect to login page
-        options.AccessDeniedPath = "/Home/Index"; // Redirect if unauthorized
-        options.ExpireTimeSpan = TimeSpan.FromDays(7); // Keep user logged in
+        options.LoginPath = "/Account/Login";
+        options.LogoutPath = "/Account/Logout";
+        options.AccessDeniedPath = "/Account/AccessDenied";
     });
+
 
 // Add role-based authorization policy
 //builder.Services.AddAuthorization(options =>

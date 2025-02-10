@@ -58,36 +58,54 @@ namespace LittleArkFoundation_WebInventorySystem.Data.Repositories
             return false; // User not found or password mismatch
         }
 
-        public async Task<UsersModel> GetUserAsync(int id)
+        public async Task<UsersModel?> GetUserAsync(int id, string password)
         {
-            UsersModel user = null;
-            using (var connection = new SqlConnection(_connectionString))
+            try
             {
-                string query = $"SELECT * FROM Users WHERE UserID = @UserID";
-                using (var command = new SqlCommand(query, connection))
+                bool userExist = await VerifyUserExist(id, password);
+
+                if (!userExist)
                 {
-                    command.Parameters.AddWithValue("@UserID", id);
-                    await connection.OpenAsync();
-                    using (var reader = await command.ExecuteReaderAsync())
+                    return null;
+                }
+
+                UsersModel user = null;
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    string query = $"SELECT * FROM Users WHERE UserID = @UserID";
+                    using (var command = new SqlCommand(query, connection))
                     {
-                        if (await reader.ReadAsync())
+                        command.Parameters.AddWithValue("@UserID", id);
+                        await connection.OpenAsync();
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
-                            user = new UsersModel
+                            if (await reader.ReadAsync())
                             {
-                                UserID = reader.GetInt32(0),
-                                Username = reader.GetString(1),
-                                Email = reader.GetString(2),
-                                PasswordHash = reader.GetString(3),
-                                PasswordSalt = reader.GetString(4),
-                                RoleID = reader.GetInt32(6),
-                                CreatedAt = reader.GetDateTime(7)
-                            };
+                                user = new UsersModel
+                                {
+                                    UserID = reader.GetInt32(0),
+                                    Username = reader.GetString(1),
+                                    Email = reader.GetString(2),
+                                    PasswordHash = reader.GetString(3),
+                                    PasswordSalt = reader.GetString(4),
+                                    RoleID = reader.GetInt32(6),
+                                    CreatedAt = reader.GetDateTime(7)
+                                };
+                            }
                         }
                     }
                 }
-            }
-            return user;
-        }
 
+                return user;
+            }
+            catch(SqlException ex)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
     }
 }
