@@ -39,7 +39,7 @@ body.sidebar-collapsed {
     align-items: center;
 }
 
-.navbar-top .left-buttons .btn {
+.navbar-top .left-buttons .btn-navbar {
     margin-right: -13px; /* Adjust this value to control the spacing between buttons */
 }
 
@@ -104,7 +104,7 @@ body.sidebar-collapsed .navbar-left {
     
 }
 
-.btn {
+.btn-navbar {
     color: rgb(255, 255, 255);
     font-size: 25px;
     text-decoration: none;
@@ -116,7 +116,6 @@ body.sidebar-collapsed .navbar-left {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    
 }
 
 .btn-left {
@@ -155,7 +154,7 @@ body.sidebar-collapsed .navbar-left {
 .btn-content:hover,
 .btn-main:hover,
 .btn-left:hover,
-.btn:hover {
+.btn-navbar:hover {
     background-color: #00ccff;
     color: white;
     text-decoration: none;
@@ -211,7 +210,8 @@ h2{
     align-items: center;
     gap: 10px; /* Space between elements */
     flex-wrap: wrap; /* Prevents breaking */
-    width: 40%;
+    max-width: 50%;
+    margin-bottom: 20px;
 }
 
     .search-container form {
@@ -220,17 +220,13 @@ h2{
         align-items: center;
     }
 
-#searchString{
-    margin: 10px;
-}
-
-.inputgroup {
+.input-group {
     display: flex;
     flex-grow: 1;
     align-items: center;
 }
 
-    .inputgroup .form-control {
+    .input-group .form-control {
         flex-grow: 1;
     }
 

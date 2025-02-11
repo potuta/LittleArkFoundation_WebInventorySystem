@@ -11,17 +11,42 @@
 
 <div class="search-container">
     <form asp-action="SearchByName" asp-controller="Users" asp-route-dbType="@dbType" asp-route-isArchive="@isArchive">
-        <div class="inputgroup">
-            <input type="search" name="searchString" id="searchString" class="form-control" placeholder="Search by Username" aria-label="Search">
-            <button type="submit" class="btn-content">Search</button>
+        @* <div class="input-group"> *@
+        @*     <input type="search" name="searchString" id="searchString" class="form-control" placeholder="Search by Username" aria-label="Search"> *@
+        @*     <button type="submit" class="btn-content">Search</button> *@
+        @* </div> *@
+        <div class="input-group">
+            <input type="search" name="searchString" class="form-control" placeholder="Search by Username" aria-label="Search">
+            <button type="submit" class="btn btn-dark">Search</button>
         </div>
     </form>
     <a class="mt-2 d-block" asp-action="Index" asp-controller="Users" asp-route-dbType="@dbType" asp-route-isArchive="@isArchive">Back to Full List</a>
 </div>
 
-<a href="#" class="btn-content" data-toggle="modal" data-target="#createUserModal">Create New</a>
-<a asp-action="Index" asp-controller="Users" asp-route-dbType="@dbType" asp-route-isArchive="false" class="btn-content">Main Database</a>
-<a asp-action="Index" asp-controller="Users" asp-route-dbType="@dbType" asp-route-isArchive="true" class="btn-content">Archive Database</a>
+
+
+<a href="#" class="btn btn-success" data-toggle="modal" data-target="#createUserModal">Create New</a>
+@* <a asp-action="Index" asp-controller="Users" asp-route-dbType="@dbType" asp-route-isArchive="false" class="btn-content">Main Database</a> *@
+@* <a asp-action="Index" asp-controller="Users" asp-route-dbType="@dbType" asp-route-isArchive="true" class="btn-content">Archive Database</a> *@
+
+<div class="btn-group btn-group-toggle" data-toggle="buttons">
+    <a asp-action="Index" asp-controller="Users" asp-route-dbType="@dbType" asp-route-isArchive="false" class="btn btn-secondary active">
+        @if (!isArchive){
+            <input type="radio" name="dbType" value="main" checked> <label style="margin-bottom: 0">Main Database</label>
+        }else{
+            <input type="radio" name="dbType" value="main" ><label style="margin-bottom: 0">Main Database</label>
+        }
+    </a>
+    <a asp-action="Index" asp-controller="Users" asp-route-dbType="@dbType" asp-route-isArchive="true" class="btn btn-secondary">
+        @if (!isArchive){
+            <input type="radio" name="dbType" value="archive"> <label style="margin-bottom: 0">Archive Database</label>
+        }else{
+            <input type="radio" name="dbType" value="archive" checked> <label style="margin-bottom: 0">Archive Database</label>
+
+        }
+    </a>
+</div>
+
 <table class="table">
     <thead>
         <tr>
@@ -55,12 +80,12 @@
                         @if (!isArchive)
                         {
                             @* <a href="@Url.Action("Details", new { id = user.UserID })">Details</a>   *@
-                            <a href="@Url.Action("Edit", new { id = user.UserID })">Edit</a> 
-                            <a href="@Url.Action("Archive", new { id = user.UserID })">Move to Archive</a>
+                            <a href="@Url.Action("Edit", new { id = user.UserID })" class="btn btn-primary">Edit</a>
+                            <a href="@Url.Action("Archive", new { id = user.UserID })" class="btn btn-danger">Move to Archive</a>
                         }
                         else
                         {
-                            <a href="@Url.Action("Unarchive", new { id = user.UserID })">Unarchive</a>
+                            <a href="@Url.Action("Unarchive", new { id = user.UserID })" class="btn btn-success">Unarchive</a>
                         }
                     </td>
                 </tr>
