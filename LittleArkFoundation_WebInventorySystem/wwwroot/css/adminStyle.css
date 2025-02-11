@@ -166,6 +166,10 @@ body.sidebar-collapsed .navbar-left {
     text-decoration: none;
 }
 
+#togglePasswordButton{
+
+}
+
 .dropdown {
     position: relative;
     display: inline-block;

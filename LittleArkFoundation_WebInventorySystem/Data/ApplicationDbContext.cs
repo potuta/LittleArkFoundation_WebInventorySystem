@@ -21,6 +21,7 @@ namespace LittleArkFoundation_WebInventorySystem.Data
         }
 
         public DbSet<UsersModel> Users { get; set; } 
+        public DbSet<UsersArchivesModel> UsersArchives { get; set; }
         public DbSet<RolesModel> Roles { get; set; }
         public DbSet<BloodInventoryModel> BloodInventory { get; set; }
         public DbSet<BloodRequestsModel> BloodRequests { get; set; }
@@ -29,20 +30,25 @@ namespace LittleArkFoundation_WebInventorySystem.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            // Users & UsersArchives
             // Define primary key for Users entity
             modelBuilder.Entity<UsersModel>()
+                .ToTable("Users")
                 .HasKey(u => u.UserID); // Assuming 'Id' is the primary key property
 
-            modelBuilder.Entity<UsersModel>()
-                .Property(u => u.UserID)
-                .ValueGeneratedOnAdd();
+            modelBuilder.Entity<UsersArchivesModel>()
+                .ToTable("Users_Archives")
+                .HasKey(u => u.UserID);
 
+            // Roles 
             modelBuilder.Entity<RolesModel>()
                 .HasKey(r => r.RoleID);
 
+            // BloodInventory & BloodInventoryArchives
             modelBuilder.Entity<BloodInventoryModel>()
                 .HasKey(b => b.InventoryID);
 
+            // BloodRequests & BloodRequestsArchives
             modelBuilder.Entity<BloodRequestsModel>()
                 .HasKey(h => h.RequestID);
         }

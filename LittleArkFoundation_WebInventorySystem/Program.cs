@@ -5,23 +5,15 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add authentication services
-//builder.Services.AddAuthentication("CookieAuth")
-//    .AddCookie("CookieAuth", options =>
-//    {
-//        options.LoginPath = "/Home/Index";  // Redirect to login page
-//        options.AccessDeniedPath = "/Home/Index"; // Redirect if unauthorized
-//        options.ExpireTimeSpan = TimeSpan.FromDays(7); // Keep user logged in
-//    });
-
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/Account/Login";
+        options.LoginPath = "/Home/Index";
         options.LogoutPath = "/Account/Logout";
         options.AccessDeniedPath = "/Account/AccessDenied";
+        options.ReturnUrlParameter = "returnUrl";
+        options.ExpireTimeSpan = TimeSpan.FromDays(7);
     });
-
 
 // Add role-based authorization policy
 //builder.Services.AddAuthorization(options =>
@@ -31,13 +23,6 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-//builder.Services.AddControllersWithViews(options =>
-//{
-//    var policy = new AuthorizationPolicyBuilder()
-//                     .RequireAuthenticatedUser()
-//                     .Build();
-//    options.Filters.Add(new AuthorizeFilter(policy));
-//});
 
 builder.Services.AddSingleton<ConnectionService>();
 

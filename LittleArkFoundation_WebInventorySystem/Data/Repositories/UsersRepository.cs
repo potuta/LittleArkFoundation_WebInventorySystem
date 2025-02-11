@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using LittleArkFoundation_WebInventorySystem.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace LittleArkFoundation_WebInventorySystem.Data.Repositories
 {
@@ -107,5 +108,48 @@ namespace LittleArkFoundation_WebInventorySystem.Data.Repositories
                 throw;
             }
         }
+
+        public async Task<int> GenerateUserIDAsync(int roleID)
+        {
+            try
+            {
+                int userID = roleID * 10000;
+
+                using (var context = new ApplicationDbContext(_connectionString))
+                {
+                    List<UsersModel> usersList = await context.Users
+                        .Where(r => r.RoleID == roleID)
+                        .ToListAsync();
+
+                    List<UsersArchivesModel> usersArchivesList = await context.UsersArchives
+                        .Where(r => r.RoleID == roleID)
+                        .ToListAsync();
+
+                    foreach (var user in usersList)
+                    {
+                        userID = Math.Max(userID, user.UserID);
+                    }
+
+                    foreach (var user in usersArchivesList)
+                    {
+                        userID = Math.Max(userID, user.UserID);
+                    }
+
+                    userID++;
+                }
+
+                return userID;
+            }
+            catch (SqlException ex)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+
     }
 }

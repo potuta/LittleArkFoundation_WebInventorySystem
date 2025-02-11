@@ -4,6 +4,8 @@ using LittleArkFoundation_WebInventorySystem.Data;
 using LittleArkFoundation_WebInventorySystem.Models;
 using LittleArkFoundation_WebInventorySystem.Data.Repositories;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
+using Microsoft.Data.SqlClient;
 
 namespace LittleArkFoundation_WebInventorySystem.Controllers
 {
@@ -22,13 +24,29 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
 
             await using (var context = new ApplicationDbContext(connectionString))
             {
+                
+                if (isArchive)
+                {
+                    var usersArchives = await context.UsersArchives.ToListAsync();
+
+                    var viewArchivesModel = new UsersViewModel
+                    {
+                        UsersArchives = usersArchives,
+                        //NewUserArchive = new UsersArchivesModel(),
+                        Roles = await new RolesRepository(_connectionService).GetRolesAsync(dbType)
+                    };
+
+                    ViewBag.isArchive = isArchive;
+                    return View(viewArchivesModel);
+                }
+
                 var users = await context.Users.ToListAsync();
 
                 var viewModel = new UsersViewModel
                 {
                     Users = users,
                     NewUser = new UsersModel(),
-                    Roles = new RolesRepository(_connectionService).GetRoles(dbType)
+                    Roles = await new RolesRepository(_connectionService).GetRolesAsync(dbType)
                 };
 
                 ViewBag.isArchive = isArchive;
@@ -36,7 +54,7 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
             }
         }
 
-        //TODO: improve searching
+        //TODO: add search for UserID
         public async Task<IActionResult> SearchByName(string searchString, string dbType, bool isArchive)
         {
             string connectionString = _connectionService.GetConnectionString(dbType);
@@ -45,16 +63,34 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
             {
                 if (!string.IsNullOrEmpty(searchString))
                 {
+                    if (isArchive)
+                    {
+                        var usersArchive = await context.UsersArchives
+                                    .Where(u => string.IsNullOrEmpty(searchString) ||
+                                    u.Username.Contains(searchString)) // 🔍 Apply search filter
+                                    .ToListAsync();
+
+                        var viewArchivesModel = new UsersViewModel
+                        {
+                            UsersArchives = usersArchive,
+                            //NewUser = new UsersModel(),
+                            Roles = await new RolesRepository(_connectionService).GetRolesAsync(dbType)
+                        };
+
+                        ViewBag.isArchive = isArchive;
+                        return View("Index", viewArchivesModel);
+                    }
+
                     var users = await context.Users
-                                .Where(u => string.IsNullOrEmpty(searchString) ||
-                                u.Username.Contains(searchString)) // 🔍 Apply search filter
-                                .ToListAsync();
+                                    .Where(u => string.IsNullOrEmpty(searchString) ||
+                                    u.Username.Contains(searchString)) // 🔍 Apply search filter
+                                    .ToListAsync();
 
                     var viewModel = new UsersViewModel
                     {
                         Users = users,
                         NewUser = new UsersModel(),
-                        Roles = new RolesRepository(_connectionService).GetRoles(dbType)
+                        Roles = await new RolesRepository(_connectionService).GetRolesAsync(dbType)
                     };
 
                     ViewBag.isArchive = isArchive;
@@ -85,19 +121,41 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
                 return View("Index", viewModel);
             }
 
-            string connectionString = _connectionService.GetConnectionString(dbType);
-
-            using (var context = new ApplicationDbContext(connectionString))
+            try
             {
-                byte[] passwordSalt = PasswordService.GenerateSalt();
-                string hashedPassword = PasswordService.HashPassword(viewModel.NewUser.PasswordHash, passwordSalt);
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                LoggingService.LogInformation($"User creation attempt. UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
 
-                viewModel.NewUser.PasswordHash = hashedPassword;
-                viewModel.NewUser.PasswordSalt = Convert.ToBase64String(passwordSalt);
-                viewModel.NewUser.CreatedAt = DateTime.Now;
+                string connectionString = _connectionService.GetConnectionString(dbType);
 
-                context.Users.Add(viewModel.NewUser);
-                await context.SaveChangesAsync();
+                using (var context = new ApplicationDbContext(connectionString))
+                {
+                    int newUserID = await new UsersRepository(connectionString).GenerateUserIDAsync(viewModel.NewUser.RoleID);
+                    viewModel.NewUser.UserID = newUserID;
+
+                    byte[] passwordSalt = PasswordService.GenerateSalt();
+                    string hashedPassword = PasswordService.HashPassword(viewModel.NewUser.PasswordHash, passwordSalt);
+
+                    viewModel.NewUser.PasswordHash = hashedPassword;
+                    viewModel.NewUser.PasswordSalt = Convert.ToBase64String(passwordSalt);
+                    viewModel.NewUser.CreatedAt = DateTime.Now;
+
+                    context.Users.Add(viewModel.NewUser);
+                    await context.SaveChangesAsync();
+
+                    TempData["CreateSuccess"] = $"Successfully added new user! UserID: {viewModel.NewUser.UserID} Username: {viewModel.NewUser.Username}";
+                    LoggingService.LogInformation($"User creation successful. Created new user UserID: {viewModel.NewUser.UserID}. Created by UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                }
+            }
+            catch (SqlException ex)
+            {
+                LoggingService.LogError("SQL Error: " + ex.Message);
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                LoggingService.LogError("Error: " + ex.Message);
+                return RedirectToAction("Index");
             }
 
             return RedirectToAction("Index");
@@ -114,7 +172,6 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
                 if (user == null) return NotFound();
                 return View(user);
             }
-
         }
 
         // 🟡 EDIT: Show edit page
@@ -130,14 +187,13 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
                 {
                     Users = new List<UsersModel>(),
                     NewUser = user,
-                    Roles = new RolesRepository(_connectionService).GetRoles(dbType)
+                    Roles = await new RolesRepository(_connectionService).GetRolesAsync(dbType)
                 };
 
                 return View(viewModel);
             }
         }
 
-        //TODO: Implement logging for edit
         // 🔵 UPDATE: Save changes
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -154,71 +210,136 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
                         Console.WriteLine("ModelState Error: " + error.ErrorMessage, error.Exception);
                     }
                 }
-                user.Roles = new RolesRepository(_connectionService).GetRoles(dbType);
+                user.Roles = await new RolesRepository(_connectionService).GetRolesAsync(dbType);
                 return View("Index", user);
             }
 
-            string connectionString = _connectionService.GetConnectionString(dbType);
-
-            using (var context = new ApplicationDbContext(connectionString))
+            try
             {
-                //context.Entry(user).State = EntityState.Modified;
-                //context.Update(user.NewUser);
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                string connectionString = _connectionService.GetConnectionString(dbType);
 
-                if (isEditPasswordEnabled)
+                LoggingService.LogInformation($"User edit attempt. UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+
+                using (var context = new ApplicationDbContext(connectionString))
                 {
-                    byte[] passwordSalt = PasswordService.GenerateSalt();
-                    string hashedPassword = PasswordService.HashPassword(user.NewUser.PasswordHash, passwordSalt);
-                    user.NewUser.PasswordHash = hashedPassword;
-                    user.NewUser.PasswordSalt = Convert.ToBase64String(passwordSalt);
-                }
+                    //context.Entry(user).State = EntityState.Modified;
+                    //context.Update(user.NewUser);
 
-                context.Users.Update(user.NewUser);
-                await context.SaveChangesAsync();
+                    if (isEditPasswordEnabled)
+                    {
+                        byte[] passwordSalt = PasswordService.GenerateSalt();
+                        string hashedPassword = PasswordService.HashPassword(user.NewUser.PasswordHash, passwordSalt);
+                        user.NewUser.PasswordHash = hashedPassword;
+                        user.NewUser.PasswordSalt = Convert.ToBase64String(passwordSalt);
+                    }
+
+                    context.Users.Update(user.NewUser);
+                    await context.SaveChangesAsync();
+
+                    LoggingService.LogInformation($"User edit sucessful. Edited UserID: {user.NewUser.UserID}. Edited by UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                }
+            }
+            catch (Exception ex)
+            {
+                LoggingService.LogError("Error: " + ex.Message);
+                return RedirectToAction("Index", new { dbType, isArchive = false });
             }
 
             return RedirectToAction("Index");
         }
 
-        // TODO: Implement Archive
         // 🟡 ARCHIVE: Archive the user
         public async Task<IActionResult> Archive(string dbType, int id)
         {
-            return RedirectToAction("Index");
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                string connectionString = _connectionService.GetConnectionString(dbType);
+
+                LoggingService.LogInformation($"User archive attempt. UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                using (var context = new ApplicationDbContext(connectionString))
+                {
+                    var user = await context.Users.FindAsync(id);
+
+                    if (user.UserID.ToString() == userIdClaim.Value)
+                    {
+                        TempData["ArchiveError"] = "Can't archive the user you're currently using.";
+                        return RedirectToAction("Index", new { dbType, isArchive = false });
+                    }
+
+                    var userArchive = new UsersArchivesModel()
+                    {
+                        UserID = user.UserID,
+                        Username = user.Username,
+                        Email = user.Email,
+                        PhoneNumber = user.PhoneNumber,
+                        PasswordHash = user.PasswordHash,
+                        PasswordSalt = user.PasswordSalt,
+                        RoleID = user.RoleID,
+                        CreatedAt = user.CreatedAt,
+                        ArchivedAt = DateTime.Now,
+                        ArchivedBy = $"UserID: {userIdClaim.Value}"
+                    };
+
+                    context.UsersArchives.Add(userArchive);
+                    context.Users.Remove(user);
+
+                    await context.SaveChangesAsync();
+                    LoggingService.LogInformation($"User archive successful. Archived UserID: {userArchive.UserID}. Archived by UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                }
+            }
+            catch (Exception ex)
+            {
+                LoggingService.LogError("Error: " + ex.Message);
+                return RedirectToAction("Index", new { dbType, isArchive = false });
+            }
+
+            return RedirectToAction("Index", new {dbType, isArchive = false});
         }
 
-        // TODO: Implement Unarchive
         // 🟡 UNARCHIVE: Unarchive the user
         public async Task<IActionResult> Unarchive(string dbType, int id)
         {
-            return RedirectToAction("Index");
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                string connectionString = _connectionService.GetConnectionString(dbType);
+
+                LoggingService.LogInformation($"User unarchive attempt. UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+
+                using (var context = new ApplicationDbContext(connectionString))
+                {
+                    var userArchive = await context.UsersArchives.FindAsync(id);
+
+                    var user = new UsersModel()
+                    {
+                        UserID = userArchive.UserID,
+                        Username = userArchive.Username,
+                        Email = userArchive.Email,
+                        PhoneNumber = userArchive.PhoneNumber,
+                        PasswordHash = userArchive.PasswordHash,
+                        PasswordSalt = userArchive.PasswordSalt,
+                        RoleID = userArchive.RoleID,
+                        CreatedAt = userArchive.CreatedAt,
+                    };
+
+                    context.Users.Add(user);
+                    context.UsersArchives.Remove(userArchive);
+
+                    await context.SaveChangesAsync();
+
+                    LoggingService.LogInformation($"User unarchive successful. Unarchived UserID: {user.UserID}. Archived by UserID: {userIdClaim.Value}, DateTime: {DateTime.Now}");
+                }
+            }
+            catch (Exception ex)
+            {
+                LoggingService.LogError("Error: " + ex.Message);
+                return RedirectToAction("Index", new { dbType, isArchive = false });
+            }
+
+            return RedirectToAction("Index", new { dbType, isArchive = true });
         }
 
-        // 🔴 DELETE: Show confirmation page
-        public async Task<IActionResult> Delete(string dbType, int id)
-        {
-            string connectionString = _connectionService.GetConnectionString(dbType);
-            using (var context = new ApplicationDbContext(connectionString))
-            {
-                var users = await context.Users.FindAsync(id);
-                if (users == null) return NotFound();
-                return View(users);
-            }
-        }
-
-        // 🔴 DELETE: Remove the product from DB
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string dbType, int id)
-        {
-            string connectionString = _connectionService.GetConnectionString(dbType);
-            using (var context = new ApplicationDbContext(connectionString))
-            {
-                var users = await context.Users.FindAsync(id);
-                context.Users.Remove(users);
-                await context.SaveChangesAsync();
-                return RedirectToAction("Index");
-            }
-        }
     }
 }

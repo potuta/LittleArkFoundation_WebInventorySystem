@@ -18,20 +18,12 @@ namespace LittleArkFoundation_WebInventorySystem.Data.Repositories
             _connectionService = connectionService;
         }
 
-        public IEnumerable<RolesModel> GetRoles()
-        {
-            using (var context = new ApplicationDbContext(_connectionString))
-            {
-                return context.Roles.ToList();
-            }
-        }
-
-        public IEnumerable<RolesModel> GetRoles(string dbType)
+        public async Task<IEnumerable<RolesModel>> GetRolesAsync(string dbType)
         {
             string connectionString = _connectionService.GetConnectionString(dbType);
             using (var context = new ApplicationDbContext(connectionString))
             {
-                return context.Roles.ToList();
+                return await Task.Run(() => context.Roles.ToList());
             }
         }
 

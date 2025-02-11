@@ -11,10 +11,6 @@
 
 <div class="search-container">
     <form asp-action="SearchByName" asp-controller="Users" asp-route-dbType="@dbType" asp-route-isArchive="@isArchive">
-        @* <div class="input-group"> *@
-        @*     <input type="search" name="searchString" id="searchString" class="form-control" placeholder="Search by Username" aria-label="Search"> *@
-        @*     <button type="submit" class="btn-content">Search</button> *@
-        @* </div> *@
         <div class="input-group">
             <input type="search" name="searchString" class="form-control" placeholder="Search by Username" aria-label="Search">
             <button type="submit" class="btn btn-dark">Search</button>
@@ -24,10 +20,10 @@
 </div>
 
 
-
-<a href="#" class="btn btn-success" data-toggle="modal" data-target="#createUserModal">Create New</a>
-@* <a asp-action="Index" asp-controller="Users" asp-route-dbType="@dbType" asp-route-isArchive="false" class="btn-content">Main Database</a> *@
-@* <a asp-action="Index" asp-controller="Users" asp-route-dbType="@dbType" asp-route-isArchive="true" class="btn-content">Archive Database</a> *@
+@if (!isArchive)
+{
+    <a href="#" class="btn btn-success" data-toggle="modal" data-target="#createUserModal">Create New</a>
+}
 
 <div class="btn-group btn-group-toggle" data-toggle="buttons">
     <a asp-action="Index" asp-controller="Users" asp-route-dbType="@dbType" asp-route-isArchive="false" class="btn btn-secondary active">
@@ -47,48 +43,96 @@
     </a>
 </div>
 
+@if (TempData["ArchiveError"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ArchiveError"]
+    </div>
+}
+
+@if (TempData["CreateSuccess"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["CreateSuccess"]
+    </div>
+}
+
 <table class="table">
     <thead>
-        <tr>
-            <th>UserID</th>
-            <th>Username</th>
-            <th>Email</th>
-            <th>PhoneNumber</th>
-            <th>PasswordHash</th>
-            <th>RoleID</th>
-            <th>CreatedAt</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (Model.Users != null)
+        @if (Model.Users != null || Model.UsersArchives != null)
         {
-            @foreach (var user in Model.Users)
+            if (!isArchive)
             {
                 <tr>
-                    <td>@user.UserID</td>
-                    <td>@user.Username</td>
-                    <td>@user.Email</td>
-                    <td>@user.PhoneNumber</td>
-                    <td class="td-password">@user.PasswordHash</td>
-                    <td>@user.RoleID</td>
-                    <td>@user.CreatedAt</td>
-                    <td>
-                        @* <a href="#" data-toggle="modal" data-target="#detailsUserModal" data-id="@user.UserID" asp-action="Details" asp-controller="Users" asp-route-id="@user.UserID">Details</a>  *@
-                        @* <a href="#" data-toggle="modal" data-target="#editUserModal" data-id="@user.UserID">Edit</a>  *@
-                        @* <a href="#" data-toggle="modal" data-target="#deleteUserModal" data-id="@user.UserID">Delete</a>  *@
-                        @if (!isArchive)
-                        {
-                            @* <a href="@Url.Action("Details", new { id = user.UserID })">Details</a>   *@
+                    <th>UserID</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>PhoneNumber</th>
+                    <th>PasswordHash</th>
+                    <th>RoleID</th>
+                    <th>CreatedAt</th>
+                    <th></th>
+                </tr>
+            }
+            else
+            {
+                <tr>
+                    <th>UserID</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>PhoneNumber</th>
+                    <th>PasswordHash</th>
+                    <th>RoleID</th>
+                    <th>CreatedAt</th>
+                    <th>ArchivedAt</th>
+                    <th>ArchivedBy</th>
+                    <th></th>
+                </tr>
+            }
+        }
+
+    </thead>
+    <tbody>
+        @if (Model.Users != null || Model.UsersArchives != null)
+        {
+            if (!isArchive)
+            {
+                @foreach (var user in Model.Users)
+                {
+                    <tr>
+                        <td>@user.UserID</td>
+                        <td>@user.Username</td>
+                        <td>@user.Email</td>
+                        <td>@user.PhoneNumber</td>
+                        <td class="td-password">@user.PasswordHash</td>
+                        <td>@user.RoleID</td>
+                        <td>@user.CreatedAt</td>
+                        <td>
                             <a href="@Url.Action("Edit", new { id = user.UserID })" class="btn btn-primary">Edit</a>
                             <a href="@Url.Action("Archive", new { id = user.UserID })" class="btn btn-danger">Move to Archive</a>
-                        }
-                        else
-                        {
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                @foreach (var user in Model.UsersArchives)
+                {
+                    <tr>
+                        <td>@user.UserID</td>
+                        <td>@user.Username</td>
+                        <td>@user.Email</td>
+                        <td>@user.PhoneNumber</td>
+                        <td class="td-password">@user.PasswordHash</td>
+                        <td>@user.RoleID</td>
+                        <td>@user.CreatedAt</td>
+                        <td>@user.ArchivedAt</td>
+                        <td>@user.ArchivedBy</td>
+                        <td>
                             <a href="@Url.Action("Unarchive", new { id = user.UserID })" class="btn btn-success">Unarchive</a>
-                        }
-                    </td>
-                </tr>
+                        </td>
+                    </tr>
+                }
             }
         }
     </tbody>
