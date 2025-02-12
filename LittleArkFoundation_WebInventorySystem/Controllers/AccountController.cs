@@ -255,7 +255,7 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ResetPassword(string newPassword)
+        public async Task<IActionResult> ResetPassword(int userID, string newPassword)
         {
             return RedirectToAction("Index", "Home");
         }
