@@ -21,8 +21,14 @@ window.onclick = function (event) {
 
 document.addEventListener("DOMContentLoaded", function () {
     var loginError = document.getElementById("loginErrorMessage");
+    var resetPasswordSuccess = document.getElementById("resetPasswordSuccessMessage");
 
     if (loginError) {
+        var loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+        loginModal.show();
+    }
+
+    if (resetPasswordSuccess) {
         var loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
         loginModal.show();
     }

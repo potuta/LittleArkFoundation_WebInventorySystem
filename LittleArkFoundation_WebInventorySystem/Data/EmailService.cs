@@ -18,7 +18,7 @@ namespace STUEnrollmentSystem
                 }
 
                 string senderEmail = "stuofficialschool@gmail.com";
-                string senderPassword = "hibz zouo afaw nwzl";  // TODO: NEVER store this in code! Use secrets/vault.
+                string senderPassword = "hibz zouo afaw nwzl";  // TODO: Store this in secrets/vault. Never store this in code.
 
                 using (SmtpClient smtpClient = new SmtpClient("smtp.gmail.com", 587))
                 {

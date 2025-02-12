@@ -9,6 +9,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.AspNetCore.Authorization;
 using STUEnrollmentSystem;
 using Azure.Core;
+using System.Data;
 
 namespace LittleArkFoundation_WebInventorySystem.Controllers
 {
@@ -237,7 +238,6 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
             return Json(new { success = true, message = "Code verified successfully!" });
         }
 
-        // TODO: Implement Reset Password
         [HttpGet]
         public IActionResult ResetPassword()
         {
@@ -257,6 +257,37 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword(int userID, string newPassword)
         {
+            try
+            {
+                LoggingService.LogInformation($"User reset password attempt. UserID: {userID}, DateTime: {DateTime.Now}");
+
+                string connectionString = _connectionService.GetConnectionString("main");
+
+                using (var context = new ApplicationDbContext(connectionString))
+                {
+                    var user = await context.Users.FindAsync(userID);
+
+                    byte[] passwordSalt = PasswordService.GenerateSalt();
+                    string hashedPassword = PasswordService.HashPassword(newPassword, passwordSalt);
+
+                    user.PasswordHash = hashedPassword;
+                    user.PasswordSalt = Convert.ToBase64String(passwordSalt);
+
+                    context.Users.Update(user);
+                    await context.SaveChangesAsync();
+                }
+
+                HttpContext.Session.Remove("VerifiedUserID");
+                TempData["ResetPasswordSuccess"] = "Your password has been reset successfully.";
+                LoggingService.LogInformation($"User reset password successful. UserID: {userID}, DateTime: {DateTime.Now}");
+            }
+            catch (Exception ex)
+            {
+                LoggingService.LogError($"Password reset error: {ex.Message}");
+                LoggingService.LogError("Error: " + ex.Message);
+                return RedirectToAction("ResetPassword");
+            }
+
             return RedirectToAction("Index", "Home");
         }
 

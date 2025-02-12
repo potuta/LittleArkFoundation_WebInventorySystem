@@ -61,6 +61,12 @@
                                 @TempData["LoginError"]
                             </div>
                         }
+                        @if (TempData["ResetPasswordSuccess"] != null)
+                        {
+                            <div class="alert alert-success" id="resetPasswordSuccessMessage">
+                                @TempData["ResetPasswordSuccess"]
+                            </div>
+                        }
                         <div class="tab-pane fade show active" id="admin" role="tabpanel" aria-labelledby="admin-tab">
                             <form id="LoginForm" asp-area="" asp-controller="Account" asp-action="Login" method="post">
                                 @Html.AntiForgeryToken()
