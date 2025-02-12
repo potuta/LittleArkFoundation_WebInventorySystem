@@ -7,6 +7,8 @@ using LittleArkFoundation_WebInventorySystem.Data;
 using LittleArkFoundation_WebInventorySystem.Data.Repositories;
 using Microsoft.Data.SqlClient;
 using Microsoft.AspNetCore.Authorization;
+using STUEnrollmentSystem;
+using Azure.Core;
 
 namespace LittleArkFoundation_WebInventorySystem.Controllers
 {
@@ -145,22 +147,116 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        // TODO: Implement VerifyCode and ResetPassword
+        
+        private static Dictionary<int, DateTime> lastRequestTimes = new Dictionary<int, DateTime>();
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> VerifyCode()
+        public async Task<IActionResult> SendCode(int userID)
         {
-            return RedirectToAction("ResetPassword");
+            if (userID == 0)
+            {
+                return Json(new { success = false, message = "User ID is required!" });
+            }
+
+            if (lastRequestTimes.TryGetValue(userID, out DateTime lastRequest))
+            {
+                TimeSpan timeSinceLastRequest = DateTime.UtcNow - lastRequest;
+
+                if (timeSinceLastRequest.TotalSeconds < 30)
+                {
+                    return Json(new { success = false, message = $"Please wait {30 - timeSinceLastRequest.TotalSeconds:F0} seconds before requesting again." });
+                }
+            }
+
+            string verificationCode = EmailService.GetSecureNumericVerificationCode(6);
+            lastRequestTimes[userID] = DateTime.UtcNow;
+
+            // Store session values correctly
+            HttpContext.Session.SetString("VerificationCode", verificationCode);
+            HttpContext.Session.SetString("CodeExpiresAt", DateTime.UtcNow.AddMinutes(5).Ticks.ToString());
+
+            // Send email asynchronously
+            string connectionString = _connectionService.GetConnectionString("main");
+            using (var context = new ApplicationDbContext(connectionString))
+            {
+                var user = await context.Users.FindAsync(userID);
+                if (user == null || string.IsNullOrEmpty(user.Email))
+                {
+                    return Json(new { success = false, message = "User not found or email missing!" });
+                }
+
+                EmailService _emailService = new EmailService();
+                string emailMessage = $"Your verification code is: {verificationCode}";
+
+                bool emailSent = await _emailService.SendEmailAsync(user.Email, "Verification Code", emailMessage);
+                if (!emailSent)
+                {
+                    return Json(new { success = false, message = "Failed to send email. Try again later." });
+                }
+            }
+
+            return Json(new { success = true, message = "Verification code sent successfully!" });
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> VerifyCode(int userID, string code)
+        {
+            if (userID == 0 || string.IsNullOrEmpty(code))
+            {
+                return Json(new { success = false, message = "User ID and Code are required!" });
+            }
+
+            string storedCode = HttpContext.Session.GetString("VerificationCode");
+            string expiresAtString = HttpContext.Session.GetString("CodeExpiresAt");
+
+            if (string.IsNullOrEmpty(storedCode) || string.IsNullOrEmpty(expiresAtString))
+            {
+                return Json(new { success = false, message = "No verification code found. Please request a new one." });
+            }
+
+            DateTime expiresAt = new DateTime(long.Parse(expiresAtString), DateTimeKind.Utc);
+            if (DateTime.UtcNow > expiresAt)
+            {
+                return Json(new { success = false, message = "Verification code expired. Please request a new one." });
+            }
+
+            if (code != storedCode)
+            {
+                return Json(new { success = false, message = "Invalid code. Please try again." });
+            }
+
+            // Store userID in session after successful verification
+            HttpContext.Session.SetInt32("VerifiedUserID", userID);
+
+            // Clear session after success
+            HttpContext.Session.Remove("VerificationCode");
+            HttpContext.Session.Remove("CodeExpiresAt");
+
+            return Json(new { success = true, message = "Code verified successfully!" });
+        }
+
+        // TODO: Implement Reset Password
+        [HttpGet]
         public IActionResult ResetPassword()
         {
+            // Check if user is verified
+            int? verifiedUserID = HttpContext.Session.GetInt32("VerifiedUserID");
+            if (verifiedUserID == null)
+            {
+                // Redirect to verification page if not verified
+                return RedirectToAction("Index", "Home");
+            }
+
+            ViewBag.UserID = verifiedUserID; // Pass userID to the view
             return View();
         }
 
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ResetPassword(string oldPassword, string newPassword)
+        public async Task<IActionResult> ResetPassword(string newPassword)
         {
             return RedirectToAction("Index", "Home");
         }

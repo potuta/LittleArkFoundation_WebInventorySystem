@@ -66,7 +66,7 @@
                                 @Html.AntiForgeryToken()
                                 <div class="mb-3">
                                     <label for="adminUserID" class="form-label">User ID:</label>
-                                    <input type="text" class="form-control" id="adminUserID" name="userID" required>
+                                    <input type="number" class="form-control" id="adminUserID" name="userID" required>
                                 </div>
                                 <div class="mb-3">
                                     <label for="adminPassword" class="form-label">Password:</label>
@@ -119,25 +119,28 @@
                 </div>
                 <div class="modal-body">
                     <div class="tab-content" id="forgotPasswordTabContent">
-                        @if (TempData["CodeError"] != null)
-                        {
-                            <div class="alert alert-danger" id="codeErrorMessage">
-                                @TempData["CodeError"]
-                            </div>
-                        }
                         <div class="tab-pane fade show active" id="admin" role="tabpanel" aria-labelledby="admin-tab">
-                            <form id="forgotPasswordForm" asp-area="" asp-controller="" asp-action="" method="post">
+                            <!-- Send Code Form (AJAX) -->
+                            <form id="sendCodeForm" asp-action="SendCode" asp-controller="Account" method="post">
                                 @Html.AntiForgeryToken()
                                 <div class="mb-3">
                                     <label for="userID" class="form-label">User ID:</label>
-                                    <input type="text" class="form-control" id="userID" name="userID" required>
-                                    <button class="btn btn-primary" onclick="">Send Code</button>
+                                    <input type="number" class="form-control" id="userID" name="userID" required>
+                                    <button type="button" class="btn btn-primary" id="sendCodeButton">Send Code</button>
                                 </div>
+                                <p id="sendCodeMessage"></p> <!-- Success/Error message -->
+                            </form>
+
+                            <!-- Verify Code Form (AJAX) -->
+                            <form id="verifyCodeForm" asp-action="VerifyCode" asp-controller="Account" method="post">
+                                @Html.AntiForgeryToken()
                                 <div class="mb-3">
                                     <label for="code" class="form-label">Code:</label>
-                                    <input type="number" class="form-control" id="code" name="code" required>
+                                    <input type="hidden" id="hiddenUserID" name="userID" />
+                                    <input type="text" class="form-control" id="code" name="code" required>
                                 </div>
-                                <button type="submit" class="btn btn-primary">Submit</button>
+                                <button type="button" class="btn btn-primary" id="verifyCodeButton">Submit</button>
+                                <p id="verifyCodeMessage"></p> <!-- Success/Error message -->
                             </form>
                         </div>
                     </div>
@@ -145,6 +148,126 @@
             </div>
         </div>
     </div>
+
+    <!-- Bootstrap Modal -->
+    <div class="modal fade" id="customAlert" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Alert</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="modalMessage">This is an alert message.</div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        // AJAX send code
+        document.getElementById("sendCodeButton").addEventListener("click", async function (event) {
+            event.preventDefault();
+            let userID = document.getElementById("userID").value;
+            let button = this;
+
+            if (!userID) {
+                document.getElementById("sendCodeMessage").textContent = "Please enter your User ID.";
+                document.getElementById("sendCodeMessage").style.color = "red";
+                return;
+            }
+
+            document.getElementById("hiddenUserID").value = userID;
+            button.disabled = true;
+            button.innerText = "Please wait...";
+
+            try {
+                let response = await fetch("/Account/SendCode", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: `userID=${encodeURIComponent(userID)}&__RequestVerificationToken=${document.querySelector("input[name='__RequestVerificationToken']").value}`
+                });
+
+                let data = await response.json();
+                showCustomAlert("Message", data.message);
+
+                if (!data.success) {
+                    button.disabled = false;
+                    button.innerText = "Send Code";
+                } else {
+                    startCountdown(button, 30); // Start 30-sec countdown
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                button.disabled = false;
+                button.innerText = "Send Code";
+            }
+        });
+
+        // AJAX verify code
+        document.getElementById("verifyCodeButton").addEventListener("click", async function (event) {
+            event.preventDefault();
+            let userID = document.getElementById("hiddenUserID").value;
+            let code = document.getElementById("code").value;
+            let button = this;
+
+            if (!userID || !code) {
+                document.getElementById("verifyCodeMessage").textContent = "Missing User ID or Code!";
+                document.getElementById("verifyCodeMessage").style.color = "red";
+                return;
+            }
+
+            button.disabled = true;
+            button.innerText = "Verifying...";
+
+            try {
+                let response = await fetch("/Account/VerifyCode", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: `userID=${encodeURIComponent(userID)}&code=${encodeURIComponent(code)}&__RequestVerificationToken=${document.querySelector("input[name='__RequestVerificationToken']").value}`
+                });
+
+                let data = await response.json();
+                // alert(data.message);
+                showCustomAlert("Message", data.message);
+                if (data.success) window.location.href = "/Account/ResetPassword";
+                else button.disabled = false;
+            } catch (error) {
+                console.error("Error:", error);
+                button.disabled = false;
+            } finally {
+                button.innerText = "Submit";
+            }
+        });
+
+        // Function to show custom alert modal
+        function showCustomAlert(title, message) {
+            document.getElementById("modalTitle").innerText = title;
+            document.getElementById("modalMessage").innerText = message;
+            var myModal = new bootstrap.Modal(document.getElementById("customAlert"));
+            myModal.show();
+        }
+
+        // Function to start a countdown timer on the button
+        function startCountdown(button, seconds) {
+            let remainingTime = seconds;
+            button.innerText = `Wait ${remainingTime}s`;
+
+            let countdown = setInterval(() => {
+                remainingTime--;
+                button.innerText = `Wait ${remainingTime}s`;
+
+                if (remainingTime <= 0) {
+                    clearInterval(countdown);
+                    button.disabled = false;
+                    button.innerText = "Send Code";
+                }
+            }, 1000);
+        }
+
+    </script>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
