@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-//using LittleArkFoundation_WebInventorySystem.Models;
 using LittleArkFoundation_WebInventorySystem.Areas.Admin.Models;
 
 namespace LittleArkFoundation_WebInventorySystem.Data
