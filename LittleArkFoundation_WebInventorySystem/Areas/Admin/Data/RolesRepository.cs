@@ -1,7 +1,8 @@
-﻿using LittleArkFoundation_WebInventorySystem.Models;
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
+using LittleArkFoundation_WebInventorySystem.Data;
+using LittleArkFoundation_WebInventorySystem.Areas.Admin.Models;
 
-namespace LittleArkFoundation_WebInventorySystem.Data.Repositories
+namespace LittleArkFoundation_WebInventorySystem.Areas.Admin.Data
 {
     public class RolesRepository
     {

@@ -1,3 +1,5 @@
+using LittleArkFoundation_WebInventorySystem.Areas.Admin.Models;
+
 namespace LittleArkFoundation_WebInventorySystem.Models
 {
     public class HomeViewModel

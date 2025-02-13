@@ -2,7 +2,6 @@ using System.Diagnostics;
 using LittleArkFoundation_WebInventorySystem.Data;
 using LittleArkFoundation_WebInventorySystem.Models;
 using Microsoft.AspNetCore.Mvc;
-using LittleArkFoundation_WebInventorySystem.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace LittleArkFoundation_WebInventorySystem.Controllers

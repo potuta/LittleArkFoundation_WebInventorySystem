@@ -1,4 +1,4 @@
-namespace LittleArkFoundation_WebInventorySystem.Models
+namespace LittleArkFoundation_WebInventorySystem.Areas.Admin.Models
 {
     public class BloodInventoryModel
     {

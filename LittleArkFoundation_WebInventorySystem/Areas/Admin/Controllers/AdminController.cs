@@ -2,10 +2,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using LittleArkFoundation_WebInventorySystem.Data;
 using System.Security.Claims;
-using LittleArkFoundation_WebInventorySystem.Models;
 
-namespace LittleArkFoundation_WebInventorySystem.Controllers
+namespace LittleArkFoundation_WebInventorySystem.Areas.Admin.Controllers
 {
+    [Area("Admin")]
+    [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
         private readonly ConnectionService _connectionService;
@@ -15,7 +16,6 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
             _connectionService = connectionService;
         }
 
-        [Authorize(Roles = "Admin")]
         public IActionResult SecurePage()
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);

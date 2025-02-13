@@ -12,7 +12,7 @@
 <body>
     <nav class="navbar-top">
         <div class="left-buttons">
-            <a asp-area="" asp-controller="Users" asp-action="Index" class="btn-navbar"><b>Inventory System</b></a>
+            <a asp-area="Admin" asp-controller="Admin" asp-action="SecurePage" class="btn-navbar"><b>Inventory System</b></a>
             <a href="javascript:void(0);" class="btn-navbar" id="menu" onclick="toggleSidebar()">
                 <i class='bx bx-menu'></i>
             </a>
@@ -25,15 +25,15 @@
                 <div id="dropdown-profile-menu" class="dropdown-profile-content">
                     <a href="javascript:void(0);">Profile</a>
                     <a href="javascript:void(0);">Settings</a>
-                    <a asp-action="Logout" asp-controller="Account">Logout</a>
+                    <a asp-area="" asp-action="Logout" asp-controller="Account">Logout</a>
                 </div>
             </div>
         </div>
     </nav>
 
     <nav class="navbar-left">
-        <a asp-controller="Users" asp-action="Index" class="btn-left @(ViewContext.RouteData.Values["controller"]?.ToString() == "Users" ? "active" : "")">Users</a>
-        <a asp-controller="Roles" asp-action="Index" class="btn-left @(ViewContext.RouteData.Values["controller"]?.ToString() == "Roles" ? "active" : "")">Roles</a>
+        <a asp-area="Admin" asp-controller="Users" asp-action="Index" class="btn-left @(ViewContext.RouteData.Values["controller"]?.ToString() == "Users" ? "active" : "")">Users</a>
+        <a asp-area="Admin" asp-controller="Roles" asp-action="Index" class="btn-left @(ViewContext.RouteData.Values["controller"]?.ToString() == "Roles" ? "active" : "")">Roles</a>
     </nav>
 
     <div class="main-content">

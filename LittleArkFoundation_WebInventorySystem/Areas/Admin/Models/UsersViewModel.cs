@@ -1,7 +1,4 @@
-using LittleArkFoundation_WebInventorySystem.Data;
-using LittleArkFoundation_WebInventorySystem.Data.Repositories;
-
-namespace LittleArkFoundation_WebInventorySystem.Models
+namespace LittleArkFoundation_WebInventorySystem.Areas.Admin.Models
 {
     public class UsersViewModel
     {

@@ -1,15 +1,12 @@
-using System.Data.Common;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using LittleArkFoundation_WebInventorySystem.Data;
-using LittleArkFoundation_WebInventorySystem.Data.Repositories;
 using Microsoft.Data.SqlClient;
-using Microsoft.AspNetCore.Authorization;
 using STUEnrollmentSystem;
-using Azure.Core;
 using System.Data;
+using LittleArkFoundation_WebInventorySystem.Areas.Admin.Data;
 
 namespace LittleArkFoundation_WebInventorySystem.Controllers
 {
@@ -114,10 +111,11 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
                 // Redirect based on role
                 return role switch
                 {
-                    "Admin" => RedirectToAction("SecurePage", "Admin"),
-                    "Donor" => RedirectToAction("SecurePage", "Donor"),
+                    "Admin" => RedirectToAction("SecurePage", "Admin", new { area = "Admin" }),
+                    "Donor" => RedirectToAction("SecurePage", "Donor", new { area = "Donor" }),
                     _ => RedirectToAction("Index", "Home")
                 };
+
             }
             catch (SqlException ex)
             {

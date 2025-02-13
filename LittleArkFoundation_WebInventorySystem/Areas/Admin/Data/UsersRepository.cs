@@ -1,8 +1,9 @@
 ﻿using Microsoft.Data.SqlClient;
-using LittleArkFoundation_WebInventorySystem.Models;
+using LittleArkFoundation_WebInventorySystem.Areas.Admin.Models;
 using Microsoft.EntityFrameworkCore;
+using LittleArkFoundation_WebInventorySystem.Data;
 
-namespace LittleArkFoundation_WebInventorySystem.Data.Repositories
+namespace LittleArkFoundation_WebInventorySystem.Areas.Admin.Data
 {
     public class UsersRepository
     {

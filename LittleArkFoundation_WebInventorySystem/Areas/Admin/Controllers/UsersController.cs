@@ -1,14 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LittleArkFoundation_WebInventorySystem.Data;
-using LittleArkFoundation_WebInventorySystem.Models;
-using LittleArkFoundation_WebInventorySystem.Data.Repositories;
-using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using Microsoft.Data.SqlClient;
+using Microsoft.AspNetCore.Authorization;
+using LittleArkFoundation_WebInventorySystem.Areas.Admin.Data;
+using LittleArkFoundation_WebInventorySystem.Areas.Admin.Models;
 
-namespace LittleArkFoundation_WebInventorySystem.Controllers
+namespace LittleArkFoundation_WebInventorySystem.Areas.Admin.Controllers
 {
+    [Area("Admin")]
+    [Authorize(Roles = "Admin")]
     public class UsersController : Controller
     {
         private readonly ConnectionService _connectionService;
