@@ -57,7 +57,7 @@ namespace LittleArkFoundation_WebInventorySystem.Areas.Admin.Controllers
         }
 
         //TODO: add search for UserID
-        public async Task<IActionResult> SearchByName(string searchString, string dbType, bool isArchive)
+        public async Task<IActionResult> Search(string searchString, string dbType, bool isArchive)
         {
             string connectionString = _connectionService.GetConnectionString(dbType);
 
@@ -68,9 +68,11 @@ namespace LittleArkFoundation_WebInventorySystem.Areas.Admin.Controllers
                     if (isArchive)
                     {
                         var usersArchive = await context.UsersArchives
-                                    .Where(u => string.IsNullOrEmpty(searchString) ||
-                                    u.Username.Contains(searchString)) // 🔍 Apply search filter
-                                    .ToListAsync();
+                                            .Where(u => string.IsNullOrEmpty(searchString) ||
+                                            u.Username.ToLower().Contains(searchString) ||
+                                            u.UserID.ToString().Contains(searchString)) 
+                                            .ToListAsync();
+
 
                         var viewArchivesModel = new UsersViewModel
                         {
@@ -85,7 +87,8 @@ namespace LittleArkFoundation_WebInventorySystem.Areas.Admin.Controllers
 
                     var users = await context.Users
                                     .Where(u => string.IsNullOrEmpty(searchString) ||
-                                    u.Username.Contains(searchString)) // 🔍 Apply search filter
+                                    u.Username.ToLower().Contains(searchString) ||
+                                    u.UserID.ToString().Contains(searchString)) 
                                     .ToListAsync();
 
                     var viewModel = new UsersViewModel

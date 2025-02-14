@@ -10,9 +10,9 @@
 <h2>Users</h2>
 
 <div class="search-container">
-    <form asp-action="SearchByName" asp-controller="Users" asp-route-dbType="@dbType" asp-route-isArchive="@isArchive">
+    <form asp-action="Search" asp-controller="Users" asp-route-dbType="@dbType" asp-route-isArchive="@isArchive">
         <div class="input-group">
-            <input type="search" name="searchString" class="form-control" placeholder="Search by Username" aria-label="Search">
+            <input type="search" name="searchString" class="form-control" placeholder="Search by UserID/Username" aria-label="Search">
             <button type="submit" class="btn btn-dark">Search</button>
         </div>
     </form>
@@ -22,7 +22,7 @@
 
 @if (!isArchive)
 {
-    <a href="#" class="btn btn-success" data-toggle="modal" data-target="#createUserModal">Create New</a>
+    <a href="#" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createUserModal">Create New</a>
 }
 
 <div class="btn-group btn-group-toggle" data-toggle="buttons">
@@ -45,15 +45,17 @@
 
 @if (TempData["ArchiveError"] != null)
 {
-    <div class="alert alert-danger">
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
         @TempData["ArchiveError"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
 
 @if (TempData["CreateSuccess"] != null)
 {
-    <div class="alert alert-success">
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
         @TempData["CreateSuccess"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
 
@@ -174,9 +176,6 @@
                     <div class="form-group">
                         <label asp-for="NewUser.RoleID" class="control-label"></label>
                         <select asp-for="NewUser.RoleID" class="form-control">
-                            @* <option value="1">Admin</option> *@
-                            @* <option value="2">Donor</option> *@
-                            @* <option value="3">Doctor</option> *@
 
                             @foreach (var role in Model.Roles)
                             {
@@ -186,7 +185,7 @@
                         </select>
                         <span asp-validation-for="NewUser.RoleID" class="text-danger"></span>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group mt-2">
                         <button type="submit" class="btn btn-primary">Create</button>
                     </div>
                 </form>
