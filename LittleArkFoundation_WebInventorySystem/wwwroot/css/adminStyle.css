@@ -43,7 +43,6 @@ body.sidebar-collapsed {
     margin-right: -13px; /* Adjust this value to control the spacing between buttons */
 }
 
-
 /* .navbar-left {
     grid-column: 1;
     grid-row: 2;
@@ -66,7 +65,7 @@ body.sidebar-collapsed {
     flex-direction: column;
     background-color: #f8f8f8;
     box-sizing: border-box;
-    width: 150px; 
+    width: fit-content;
     padding: 10px;
 }
 
@@ -164,10 +163,6 @@ body.sidebar-collapsed .navbar-left {
     background-color: #00ccff;
     color: white;
     text-decoration: none;
-}
-
-#togglePasswordButton{
-
 }
 
 .dropdown {
