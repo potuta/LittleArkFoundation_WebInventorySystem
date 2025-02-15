@@ -26,7 +26,7 @@ namespace LittleArkFoundation_WebInventorySystem.Areas.Admin.Controllers
 
             await using (var context = new ApplicationDbContext(connectionString))
             {
-                
+
                 if (isArchive)
                 {
                     var usersArchives = await context.UsersArchives.ToListAsync();
@@ -130,7 +130,6 @@ namespace LittleArkFoundation_WebInventorySystem.Areas.Admin.Controllers
                         ViewBag.isArchive = isArchive;
                         return View("Index", viewArchivesModel);
                     }
-
 
                     var users = await context.Users
                         .Where (u => string.IsNullOrEmpty(sortByRoleID) ||

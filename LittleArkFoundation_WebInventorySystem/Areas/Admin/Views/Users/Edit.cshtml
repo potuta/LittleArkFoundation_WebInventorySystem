@@ -20,17 +20,17 @@
         <input type="hidden" id="isEditPasswordEnabled" name="isEditPasswordEnabled" value="false" />
         <input type="hidden" value="@Model.NewUser.PasswordHash" id="originalPassword" />
 
-        <div class="form-group">
+        <div class="form-group mt-2">
             <label asp-for="NewUser.Username" class="control-label"></label>
             <input asp-for="NewUser.Username" class="form-control" required/>
             <span asp-validation-for="NewUser.Username" class="text-danger"></span>
         </div>
-        <div class="form-group">
+        <div class="form-group mt-2">
             <label asp-for="NewUser.Email" class="control-label"></label>
             <input asp-for="NewUser.Email" class="form-control" required/>
             <span asp-validation-for="NewUser.Email" class="text-danger"></span>
         </div>
-        <div class="form-group">
+        <div class="form-group mt-2">
             <label asp-for="NewUser.PhoneNumber" class="control-label"></label>
             <input asp-for="NewUser.PhoneNumber" class="form-control" required/>
             <span asp-validation-for="NewUser.PhoneNumber" class="text-danger"></span>
@@ -39,14 +39,14 @@
             <label asp-for="NewUser.PasswordHash" class="control-label"></label>
             @* <input type="text" value="@Model.NewUser.PasswordHash" id="originalPassword" class="form-control td-password" readonly /> *@
 
-            <button type="button" class="btn btn-secondary mt-2 mb-1" id="togglePasswordButton">Edit Password</button>
+            <button type="button" class="btn btn-secondary mt-2 mb-2" id="togglePasswordButton">Edit Password</button>
             
             @* <button type="button" class="btn-content">Reset Password</button> *@
             <input type="text" asp-for="NewUser.PasswordHash" class="form-control td-password" id="passwordField" readonly required/>
 
             <span asp-validation-for="NewUser.PasswordHash" class="text-danger"></span>
         </div>
-        <div class="form-group">
+        <div class="form-group mt-2">
             <label asp-for="NewUser.RoleID" class="control-label"></label>
             <select asp-for="NewUser.RoleID" class="form-control">
 
@@ -62,17 +62,17 @@
             </select>
             <span asp-validation-for="NewUser.RoleID" class="text-danger"></span>
         </div>
-        <div class="form-group">
+        <div class="form-group mt-2">
             <label asp-for="NewUser.CreatedAt" class="control-label"></label>
             <input asp-for="NewUser.CreatedAt" class="form-control" readonly />
         </div>
-        <div class="form-group">
+        <div class="form-group mt-2">
             <input type="submit" value="Save" class="btn btn-primary" />
         </div>
     </form>
 </div>
-<div>
-    <a asp-action="Index">Back to List</a>
+<div class="mt-2">
+    <a class="btn btn-sm btn-outline-primary" asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
