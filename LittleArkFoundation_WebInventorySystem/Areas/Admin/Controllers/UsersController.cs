@@ -56,7 +56,6 @@ namespace LittleArkFoundation_WebInventorySystem.Areas.Admin.Controllers
             }
         }
 
-        //TODO: add search for UserID
         public async Task<IActionResult> Search(string searchString, string dbType, bool isArchive)
         {
             string connectionString = _connectionService.GetConnectionString(dbType);
@@ -77,7 +76,6 @@ namespace LittleArkFoundation_WebInventorySystem.Areas.Admin.Controllers
                         var viewArchivesModel = new UsersViewModel
                         {
                             UsersArchives = usersArchive,
-                            //NewUser = new UsersModel(),
                             Roles = await new RolesRepository(_connectionService).GetRolesAsync(dbType)
                         };
 
@@ -104,7 +102,55 @@ namespace LittleArkFoundation_WebInventorySystem.Areas.Admin.Controllers
 
                 return RedirectToAction("Index", new {dbType, isArchive});
             }
+        }
 
+        public async Task<IActionResult> SortBy(string sortByRoleID, string dbType, bool isArchive)
+        {
+            string connectionString = _connectionService.GetConnectionString(dbType);
+
+            await using (var context = new ApplicationDbContext(connectionString))
+            {
+                if (!string.IsNullOrEmpty(sortByRoleID))
+                {
+
+                    if (isArchive)
+                    {
+                        var usersArchive = await context.UsersArchives
+                            .Where(u => string.IsNullOrEmpty(sortByRoleID) ||
+                            u.RoleID.ToString().Contains(sortByRoleID))
+                            .ToListAsync();
+
+                        var viewArchivesModel = new UsersViewModel
+                        {
+                            UsersArchives = usersArchive,
+                            Roles = await new RolesRepository(_connectionService).GetRolesAsync(dbType)
+                        };
+
+                        ViewBag.sortBy = await new RolesRepository(connectionString).GetRoleNameByRoleID(int.Parse(sortByRoleID));
+                        ViewBag.isArchive = isArchive;
+                        return View("Index", viewArchivesModel);
+                    }
+
+
+                    var users = await context.Users
+                        .Where (u => string.IsNullOrEmpty(sortByRoleID) ||
+                        u.RoleID.ToString().Contains(sortByRoleID))
+                        .ToListAsync();
+
+                    var viewModel = new UsersViewModel
+                    {
+                        Users = users,
+                        Roles = await new RolesRepository(_connectionService).GetRolesAsync(dbType)
+                    };
+
+                    ViewBag.sortBy = await new RolesRepository(connectionString).GetRoleNameByRoleID(int.Parse(sortByRoleID));
+                    ViewBag.isArchive = isArchive;
+                    return View("Index", viewModel);
+
+                }
+
+                return RedirectToAction("Index", new { dbType, isArchive });
+            }
         }
 
         // CREATE: Create a new user
