@@ -8,7 +8,7 @@ function toggleSidebar() {
 
 // Close the dropdown if the user clicks outside of it
 window.onclick = function (event) {
-    if (!event.target.matches('.profile-icon')) {
+    if (!event.target.matches('.profile-icon') && !event.target.matches('.profile-label')) {
         var dropdowns = document.getElementsByClassName("dropdown-profile-content");
         for (var i = 0; i < dropdowns.length; i++) {
             var openDropdown = dropdowns[i];

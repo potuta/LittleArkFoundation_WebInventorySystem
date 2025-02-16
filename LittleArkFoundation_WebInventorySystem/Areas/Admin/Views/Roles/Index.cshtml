@@ -1,10 +1,36 @@
-﻿@{
+﻿@model RolesViewModel
+
+@{
     ViewData["Title"] = "Roles";
     Layout = "_AdminLayout";
     string dbType = ViewBag.dbType ?? "main";
 }
 
 <h2>Roles</h2>
+
+<table class="table">
+    <thead>
+        @if (Model != null)
+        {
+            <tr>
+                <th>RoleID</th>
+                <th>RoleName</th>
+            </tr>
+        }
+    </thead>
+    <tbody>
+        @if (Model != null)
+        {
+            @foreach (var role in Model.Roles)
+            {
+                <tr>
+                    <td>@role.RoleID</td>
+                    <td>@role.RoleName</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
 
 
 

@@ -98,6 +98,8 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
+                    new Claim(ClaimTypes.Name, user.Username),
+                    new Claim(ClaimTypes.Email, user.Email),
                     new Claim(ClaimTypes.Role, role)
                 };
 
@@ -111,8 +113,8 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
                 // Redirect based on role
                 return role switch
                 {
-                    "Admin" => RedirectToAction("SecurePage", "Admin", new { area = "Admin" }),
-                    "Donor" => RedirectToAction("SecurePage", "Donor", new { area = "Donor" }),
+                    "Admin" => RedirectToAction("Index", "Dashboard", new { area = "Admin" }),
+                    "Donor" => RedirectToAction("Index", "Dashboard", new { area = "Donor" }),
                     _ => RedirectToAction("Index", "Home")
                 };
 

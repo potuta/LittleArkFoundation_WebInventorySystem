@@ -1,3 +1,5 @@
+@using System.Security.Claims
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,15 +22,18 @@
 <body>
     <nav class="navbar-top">
         <div class="left-buttons">
-            <a asp-area="Admin" asp-controller="Admin" asp-action="SecurePage" class="btn-navbar"><b>Inventory System</b></a>
+            <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="btn-navbar"><b>Inventory System</b></a>
             <a href="javascript:void(0);" class="btn-navbar" id="menu" onclick="toggleSidebar()">
                 <i class='bx bx-menu'></i> <!-- Menu Icon -->
             </a>
         </div>
         <div class="right-buttons">
-            <div class="dropdown">
-                <a href="javascript:void(0);" class="btn-navbar" onclick="toggleDropdown()">
+            <div class="dropdown" onclick="toggleDropdown()">
+                <a href="javascript:void(0);" class="btn-navbar-right">
                     <img src="~/Resources/profile-icon-design-free-vector.jpg" alt="profile" class="profile-icon" />
+                    <span class="profile-label" style="margin-left: 0.5rem;font-size: 1rem;">
+                        Welcome @User.FindFirstValue(ClaimTypes.Name)!
+                    </span>
                 </a>
                 <div id="dropdown-profile-menu" class="dropdown-profile-content">
                     <a href="javascript:void(0);">Profile</a>
@@ -41,10 +46,11 @@
 
     <nav class="navbar-left">
         <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="btn-left @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")">Dashboard</a>
+        <hr />
         <a asp-area="Admin" asp-controller="Users" asp-action="Index" class="btn-left @(ViewContext.RouteData.Values["controller"]?.ToString() == "Users" ? "active" : "")">Users</a>
         <a asp-area="Admin" asp-controller="Roles" asp-action="Index" class="btn-left @(ViewContext.RouteData.Values["controller"]?.ToString() == "Roles" ? "active" : "")">Roles</a>
 
-        <div class="btn-group d-block">
+        @* <div class="btn-group d-block">
             <!-- Toggle Button for Collapsible Section -->
             <a data-bs-toggle="collapse" href="#usersCollapse" role="button" aria-expanded="false"
                aria-controls="usersCollapse" class="btn-left align-items-center gap-1">
@@ -68,7 +74,7 @@
                     </li>
                 </ul>
             </div>
-        </div>
+        </div> *@
 
     </nav>
 
