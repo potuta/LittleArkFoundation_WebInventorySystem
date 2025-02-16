@@ -54,7 +54,7 @@
                     <td>@permission.Name</td>
                     <td>
                         <a href="@Url.Action("Edit", new { id = permission.PermissionID })" class="btn btn-primary">Edit</a>
-                        <a href="@Url.Action("Delete", new { id = permission.PermissionID })" class="btn btn-danger">Delete</a>
+                        <a href="@Url.Action("Delete", new { id = permission.PermissionID })" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this permission?');">Delete</a>
                     </td>
                 </tr>
             }

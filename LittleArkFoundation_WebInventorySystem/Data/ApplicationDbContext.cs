@@ -47,10 +47,6 @@ namespace LittleArkFoundation_WebInventorySystem.Data
                 .ToTable("Roles")
                 .HasKey(r => r.RoleID);
 
-            modelBuilder.Entity<RolesModel>()
-                .Property(r => r.RoleID)
-                .ValueGeneratedOnAdd();
-
             // RolesPermissions
             modelBuilder.Entity<RolePermissionsModel>()
                 .ToTable("RolePermissions")

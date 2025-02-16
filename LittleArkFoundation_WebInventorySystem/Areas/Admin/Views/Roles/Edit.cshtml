@@ -15,7 +15,14 @@
 
         <div class="form-group mt-2">
             <label asp-for="NewRole.RoleName" class="control-label"></label>
-            <input asp-for="NewRole.RoleName" class="form-control" required />
+            @if (Model.NewRole.RoleID == 1 || Model.NewRole.RoleID == 2 || Model.NewRole.RoleID == 3)
+            {
+                <input asp-for="NewRole.RoleName" class="form-control" id="roleNameField" required readonly/>
+            }
+            else
+            {
+                <input asp-for="NewRole.RoleName" class="form-control" required />
+            }
             <span asp-validation-for="NewRole.RoleName" class="text-danger"></span>
         </div>
 
@@ -53,3 +60,18 @@
 <div class="mt-2">
     <a class="btn btn-sm btn-outline-primary" asp-action="Index">Back to List</a>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var roleNameField = document.getElementById('roleNameField')
+
+            if (roleNameField.hasAttribute('readonly')) {
+                roleNameField.style.backgroundColor = "#e9ecef";
+                roleNameField.style.cursor = "not-allowed";
+                roleNameField.style.opacity = "0.6";
+            }
+        });
+
+    </script>
+}

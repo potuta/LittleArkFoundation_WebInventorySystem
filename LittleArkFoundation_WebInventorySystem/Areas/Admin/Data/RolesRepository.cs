@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using LittleArkFoundation_WebInventorySystem.Data;
 using LittleArkFoundation_WebInventorySystem.Areas.Admin.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace LittleArkFoundation_WebInventorySystem.Areas.Admin.Data
 {
@@ -51,6 +52,15 @@ namespace LittleArkFoundation_WebInventorySystem.Areas.Admin.Data
             catch (Exception ex)
             {
                 throw;
+            }
+        }
+
+        public async Task<int> GenerateRoleIDAsync()
+        {
+            await using (var context = new ApplicationDbContext(_connectionString))
+            {
+                List<RolesModel> roles = await context.Roles.ToListAsync();
+                return roles.Count + 1;
             }
         }
     }

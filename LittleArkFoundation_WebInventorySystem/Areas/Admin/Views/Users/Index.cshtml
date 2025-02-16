@@ -132,7 +132,7 @@
                         <td>@user.CreatedAt</td>
                         <td>
                             <a href="@Url.Action("Edit", new { id = user.UserID })" class="btn btn-primary">Edit</a>
-                            <a href="@Url.Action("Archive", new { id = user.UserID })" class="btn btn-danger">Move to Archive</a>
+                            <a href="@Url.Action("Archive", new { id = user.UserID })" class="btn btn-danger" onclick="return confirm('Are you sure you want to archive this user?');">Move to Archive</a>
                         </td>
                     </tr>
                 }
@@ -152,7 +152,7 @@
                         <td>@user.ArchivedAt</td>
                         <td>@user.ArchivedBy</td>
                         <td>
-                            <a href="@Url.Action("Unarchive", new { id = user.UserID })" class="btn btn-success">Unarchive</a>
+                            <a href="@Url.Action("Unarchive", new { id = user.UserID })" class="btn btn-success" onclick="return confirm('Are you sure you want to unarchive this user?');">Unarchive</a>
                         </td>
                     </tr>
                 }

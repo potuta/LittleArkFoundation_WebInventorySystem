@@ -38,6 +38,8 @@ namespace LittleArkFoundation_WebInventorySystem.Areas.Admin.Controllers
             }
         }
 
+        // TODO: Implement search role
+
         // TODO: add logs for creating roles
         public async Task<IActionResult> Create(string dbType, string name)
         {
@@ -49,6 +51,7 @@ namespace LittleArkFoundation_WebInventorySystem.Areas.Admin.Controllers
                 {
                     var role = new RolesModel()
                     {
+                        RoleID = await new RolesRepository(connectionString).GenerateRoleIDAsync(),
                         RoleName = name
                     };
 
@@ -136,8 +139,32 @@ namespace LittleArkFoundation_WebInventorySystem.Areas.Admin.Controllers
             return RedirectToAction("Index");
         }
 
-        // TODO: Implement search role
-        // TODO: Implement delete role
+        // TODO: add logs to delete role
+
+        public async Task<IActionResult> Delete(string dbType, int id)
+        {
+            string connectionString = _connectionService.GetConnectionString(dbType);
+            string roleName = await new RolesRepository(connectionString).GetRoleNameByRoleID(id);
+
+            await using (var context = new ApplicationDbContext(connectionString))
+            {
+                if (id == 0) return NotFound();
+
+                if (id == 1 || id == 2 || id == 3)
+                {
+                    TempData["DeleteError"] = $"Not allowed to delete {roleName}";
+                    return RedirectToAction("Index");
+                }
+
+                var role = await context.Roles.FindAsync(id);
+
+                context.Roles.Remove(role);
+                await context.SaveChangesAsync();
+            }
+
+            TempData["DeleteSuccess"] = $"Successfully deleted Role: {roleName}";
+            return RedirectToAction("Index");
+        }
 
     }
 }
