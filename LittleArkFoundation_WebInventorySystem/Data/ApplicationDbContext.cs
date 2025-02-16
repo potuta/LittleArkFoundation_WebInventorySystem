@@ -23,6 +23,8 @@ namespace LittleArkFoundation_WebInventorySystem.Data
         public DbSet<UsersModel> Users { get; set; } 
         public DbSet<UsersArchivesModel> UsersArchives { get; set; }
         public DbSet<RolesModel> Roles { get; set; }
+        public DbSet<RolePermissionsModel> RolePermissions { get; set; }
+        public DbSet<PermissionsModel> Permissions { get; set; }
         public DbSet<BloodInventoryModel> BloodInventory { get; set; }
         public DbSet<BloodRequestsModel> BloodRequests { get; set; }
 
@@ -42,8 +44,31 @@ namespace LittleArkFoundation_WebInventorySystem.Data
 
             // Roles 
             modelBuilder.Entity<RolesModel>()
+                .ToTable("Roles")
                 .HasKey(r => r.RoleID);
 
+            modelBuilder.Entity<RolesModel>()
+                .Property(r => r.RoleID)
+                .ValueGeneratedOnAdd();
+
+            // RolesPermissions
+            modelBuilder.Entity<RolePermissionsModel>()
+                .ToTable("RolePermissions")
+                .HasKey(rp => rp.Id);
+
+            modelBuilder.Entity<RolePermissionsModel>()
+                .Property(rp => rp.Id)
+                .ValueGeneratedOnAdd();
+
+            // Permissions
+            modelBuilder.Entity<PermissionsModel>()
+                .ToTable("Permissions")
+                .HasKey(p => p.PermissionID);
+
+            modelBuilder.Entity<PermissionsModel>()
+                .Property(p => p.PermissionID)
+                .ValueGeneratedOnAdd();
+                
             // BloodInventory & BloodInventoryArchives
             modelBuilder.Entity<BloodInventoryModel>()
                 .HasKey(b => b.InventoryID);

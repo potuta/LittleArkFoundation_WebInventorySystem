@@ -30,16 +30,27 @@ namespace LittleArkFoundation_WebInventorySystem.Areas.Admin.Data
 
         public async Task<string> GetRoleNameByRoleID(int roleID)
         {
-            using (var connection = new SqlConnection(_connectionString))
+            try
             {
-                string query = $"SELECT RoleName FROM Roles WHERE RoleID = @RoleID";
-                using (var command = new SqlCommand(query, connection))
+                using (var connection = new SqlConnection(_connectionString))
                 {
-                    command.Parameters.AddWithValue("@RoleID", roleID);
-                    await connection.OpenAsync();
-                    var result = await command.ExecuteScalarAsync();
-                    return (string)result;
+                    string query = $"SELECT RoleName FROM Roles WHERE RoleID = @RoleID";
+                    using (var command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@RoleID", roleID);
+                        await connection.OpenAsync();
+                        var result = await command.ExecuteScalarAsync();
+                        return (string)result;
+                    }
                 }
+            }
+            catch (SqlException ex)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
         }
     }

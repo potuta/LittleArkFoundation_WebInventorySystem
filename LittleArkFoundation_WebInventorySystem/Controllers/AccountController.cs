@@ -19,61 +19,6 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
             _connectionService = connectionService;
         }
 
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Login(int userID, string password)
-        //{
-        //    string connectionString = _connectionService.GetConnectionString("main");
-
-        //    try
-        //    {
-        //        LoggingService.LogInformation($"Login attempt. UserID: {userID}, DateTime: {DateTime.Now}");
-        //        bool result = await new UsersRepository(connectionString).VerifyUserExist(userID, password);
-
-        //        if (result == false)
-        //        {
-        //            LoggingService.LogInformation($"Invalid login attempt. UserID: {userID}, DateTime: {DateTime.Now}");
-        //            TempData["LoginError"] = "Invalid User ID or Password. Please try again.";
-        //            return RedirectToAction("Index", "Home");
-        //        }
-        //    }
-        //    catch(SqlException ex)
-        //    {
-        //        Console.WriteLine($"SQL Error: {ex.Message}");
-        //        LoggingService.LogError("SQL Error: " + ex.Message);
-        //        return RedirectToAction("Index", "Home");
-        //    }
-        //    catch(Exception ex)
-        //    {
-        //        Console.WriteLine($"Error: {ex.Message}");
-        //        LoggingService.LogError("Error: " + ex.Message);
-        //        return RedirectToAction("Index", "Home");
-        //    }
-
-        //    var user = await new UsersRepository(connectionString).GetUserAsync(userID);
-
-        //    if (user != null)
-        //    {
-        //        string role = await new RolesRepository(connectionString).GetRoleNameByRoleID(user.RoleID);
-
-        //        var claims = new List<Claim>
-        //        {
-        //            new Claim(ClaimTypes.NameIdentifier, user.UserID),
-        //            new Claim(ClaimTypes.Role, role)
-        //        };
-
-        //        var identity = new ClaimsIdentity(claims, "CookieAuth");
-        //        var principal = new ClaimsPrincipal(identity);
-
-        //        //await HttpContext.SignInAsync("CookieAuth", principal);
-        //        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-        //        LoggingService.LogInformation($"User logged in. UserID: {userID}, Role: {role}, DateTime: {DateTime.Now}"); 
-        //        return RedirectToAction("SecurePage", role);
-        //    }
-
-        //    return RedirectToAction("Index", "Home");
-        //}
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(int userID, string password)
@@ -94,6 +39,7 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
                 }
 
                 string role = await new RolesRepository(connectionString).GetRoleNameByRoleID(user.RoleID);
+                var permissions = await new PermissionsRepository(connectionString).GetPermissionsByRoleID(user.RoleID);
 
                 var claims = new List<Claim>
                 {
@@ -103,6 +49,12 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
                     new Claim(ClaimTypes.Role, role)
                 };
 
+                // Add permissions as claims
+                foreach (var permission in permissions)
+                {
+                    claims.Add(new Claim("Permission", permission)); // Custom claim for permissions
+                }
+
                 var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 var principal = new ClaimsPrincipal(identity);
 
@@ -111,13 +63,23 @@ namespace LittleArkFoundation_WebInventorySystem.Controllers
                 LoggingService.LogInformation($"User logged in. UserID: {userID}, Role: {role}, DateTime: {DateTime.Now}");
 
                 // Redirect based on role
-                return role switch
+                if (role == "Donor")
                 {
-                    "Admin" => RedirectToAction("Index", "Dashboard", new { area = "Admin" }),
-                    "Donor" => RedirectToAction("Index", "Dashboard", new { area = "Donor" }),
-                    _ => RedirectToAction("Index", "Home")
-                };
+                    return RedirectToAction("Index", "Dashboard", new { area = "Donor" });
+                }
+                else if (role == "Doctor")
+                {
+                    return RedirectToAction("Index", "Dashboard", new { area = "Doctor" });
+                }
+               
+                return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
 
+                //return role switch
+                //{
+                //    "Admin" => RedirectToAction("Index", "Dashboard", new { area = "Admin" }),
+                //    "Donor" => RedirectToAction("Index", "Dashboard", new { area = "Donor" }),
+                //    _ => RedirectToAction("Index", "Home")
+                //};
             }
             catch (SqlException ex)
             {

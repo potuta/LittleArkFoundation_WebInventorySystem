@@ -2,6 +2,7 @@ using LittleArkFoundation_WebInventorySystem.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using LittleArkFoundation_WebInventorySystem.Authorize;
 
 var builder = WebApplication.CreateBuilder(args);
 

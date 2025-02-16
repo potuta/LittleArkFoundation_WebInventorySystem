@@ -6,11 +6,13 @@ using Microsoft.Data.SqlClient;
 using Microsoft.AspNetCore.Authorization;
 using LittleArkFoundation_WebInventorySystem.Areas.Admin.Data;
 using LittleArkFoundation_WebInventorySystem.Areas.Admin.Models;
+using LittleArkFoundation_WebInventorySystem.Authorize;
 
 namespace LittleArkFoundation_WebInventorySystem.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
+    [HasPermission("ManageUsers")]
     public class UsersController : Controller
     {
         private readonly ConnectionService _connectionService;
@@ -190,7 +192,7 @@ namespace LittleArkFoundation_WebInventorySystem.Areas.Admin.Controllers
                     viewModel.NewUser.PasswordSalt = Convert.ToBase64String(passwordSalt);
                     viewModel.NewUser.CreatedAt = DateTime.Now;
 
-                    context.Users.Add(viewModel.NewUser);
+                    await context.Users.AddAsync(viewModel.NewUser);
                     await context.SaveChangesAsync();
 
                     TempData["CreateSuccess"] = $"Successfully added new user! UserID: {viewModel.NewUser.UserID} Username: {viewModel.NewUser.Username}";
@@ -332,7 +334,7 @@ namespace LittleArkFoundation_WebInventorySystem.Areas.Admin.Controllers
                         ArchivedBy = $"UserID: {userIdClaim.Value}"
                     };
 
-                    context.UsersArchives.Add(userArchive);
+                    await context.UsersArchives.AddAsync(userArchive);
                     context.Users.Remove(user);
 
                     await context.SaveChangesAsync();
@@ -374,7 +376,7 @@ namespace LittleArkFoundation_WebInventorySystem.Areas.Admin.Controllers
                         CreatedAt = userArchive.CreatedAt,
                     };
 
-                    context.Users.Add(user);
+                    await context.Users.AddAsync(user);
                     context.UsersArchives.Remove(userArchive);
 
                     await context.SaveChangesAsync();
